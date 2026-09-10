@@ -155,22 +155,28 @@ static void write_u32_le(unsigned char *buf, uint32_t val) {
     buf[3] = (unsigned char)((val >> 24) & 0xFF);
 }
 
-static int compress_deflate(const unsigned char *in_data, size_t in_size, unsigned char **out_data,
-                            size_t *out_size, uint32_t *out_crc) {
+static int compress_deflate(const unsigned char *in_data, size_t in_size, unsigned char **out_data, size_t *out_size,
+                            uint32_t *out_crc) {
     *out_crc = (uint32_t)crc32(0L, Z_NULL, 0);
-    *out_crc = (uint32_t)crc32(*out_crc, in_data, (uInt)in_size);
-
-    uLong bound = deflateBound(NULL, (uLong)in_size) + 64;
-    unsigned char *compressed = (unsigned char *)malloc(bound);
-    if (compressed == NULL) {
-        return -1;
+    if (in_data != NULL && in_size > 0) {
+        *out_crc = (uint32_t)crc32(*out_crc, in_data, (uInt)in_size);
     }
 
     z_stream strm;
     memset(&strm, 0, sizeof(strm));
     int ret = deflateInit2(&strm, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -MAX_WBITS, 8, Z_DEFAULT_STRATEGY);
     if (ret != Z_OK) {
-        free(compressed);
+        return -1;
+    }
+
+    uLong bound = deflateBound(&strm, (uLong)in_size) + 64;
+    if (bound < (uLong)in_size + 128) {
+        bound = (uLong)in_size + 128;
+    }
+
+    unsigned char *compressed = (unsigned char *)malloc(bound);
+    if (compressed == NULL) {
+        deflateEnd(&strm);
         return -1;
     }
 
@@ -316,10 +322,8 @@ lxw_error workbook_close(lxw_workbook *workbook) {
     buf_init(&ct_buf);
     buf_append_str(&ct_buf, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
     buf_append_str(&ct_buf, "<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\n");
-    buf_append_str(
-        &ct_buf,
-        "  <Default Extension=\"rels\" "
-        "ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>\n");
+    buf_append_str(&ct_buf, "  <Default Extension=\"rels\" "
+                            "ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>\n");
     buf_append_str(&ct_buf, "  <Default Extension=\"xml\" ContentType=\"application/xml\"/>\n");
     buf_append_str(&ct_buf,
                    "  <Override PartName=\"/xl/workbook.xml\" "
@@ -344,7 +348,8 @@ lxw_error workbook_close(lxw_workbook *workbook) {
     Buffer rels_buf;
     buf_init(&rels_buf);
     buf_append_str(&rels_buf, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
-    buf_append_str(&rels_buf, "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\n");
+    buf_append_str(&rels_buf,
+                   "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\n");
     buf_append_str(&rels_buf,
                    "  <Relationship Id=\"rId1\" "
                    "Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" "
@@ -385,9 +390,8 @@ lxw_error workbook_close(lxw_workbook *workbook) {
     Buffer wb_buf;
     buf_init(&wb_buf);
     buf_append_str(&wb_buf, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
-    buf_append_str(&wb_buf,
-                   "<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" "
-                   "xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">\n");
+    buf_append_str(&wb_buf, "<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" "
+                            "xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">\n");
     buf_append_str(&wb_buf, "  <sheets>\n");
     for (size_t s = 0; s < workbook->sheet_count; s++) {
         char s_entry[256];
@@ -406,29 +410,28 @@ lxw_error workbook_close(lxw_workbook *workbook) {
     buf_init(&styles_buf);
     buf_append_str(&styles_buf, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
     buf_append_str(&styles_buf, "<styleSheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">\n");
-    buf_append_str(&styles_buf,
-                   "  <fonts count=\"2\">\n"
-                   "    <font><sz val=\"11\"/><name val=\"Calibri\"/></font>\n"
-                   "    <font><b/><sz val=\"11\"/><name val=\"Calibri\"/></font>\n"
-                   "  </fonts>\n"
-                   "  <fills count=\"2\">\n"
-                   "    <fill><patternFill patternType=\"none\"/></fill>\n"
-                   "    <fill><patternFill patternType=\"gray125\"/></fill>\n"
-                   "  </fills>\n"
-                   "  <borders count=\"1\">\n"
-                   "    <border><left/><right/><top/><bottom/><diagonal/></border>\n"
-                   "  </borders>\n"
-                   "  <cellStyleXfs count=\"1\">\n"
-                   "    <xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/>\n"
-                   "  </cellStyleXfs>\n"
-                   "  <cellXfs count=\"2\">\n"
-                   "    <xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/>\n"
-                   "    <xf numFmtId=\"0\" fontId=\"1\" fillId=\"0\" borderId=\"0\" applyFont=\"1\"/>\n"
-                   "  </cellXfs>\n"
-                   "  <cellStyles count=\"1\">\n"
-                   "    <cellStyle name=\"Normal\" xfId=\"0\" builtinId=\"0\"/>\n"
-                   "  </cellStyles>\n"
-                   "</styleSheet>");
+    buf_append_str(&styles_buf, "  <fonts count=\"2\">\n"
+                                "    <font><sz val=\"11\"/><name val=\"Calibri\"/></font>\n"
+                                "    <font><b/><sz val=\"11\"/><name val=\"Calibri\"/></font>\n"
+                                "  </fonts>\n"
+                                "  <fills count=\"2\">\n"
+                                "    <fill><patternFill patternType=\"none\"/></fill>\n"
+                                "    <fill><patternFill patternType=\"gray125\"/></fill>\n"
+                                "  </fills>\n"
+                                "  <borders count=\"1\">\n"
+                                "    <border><left/><right/><top/><bottom/><diagonal/></border>\n"
+                                "  </borders>\n"
+                                "  <cellStyleXfs count=\"1\">\n"
+                                "    <xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/>\n"
+                                "  </cellStyleXfs>\n"
+                                "  <cellXfs count=\"2\">\n"
+                                "    <xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/>\n"
+                                "    <xf numFmtId=\"0\" fontId=\"1\" fillId=\"0\" borderId=\"0\" applyFont=\"1\"/>\n"
+                                "  </cellXfs>\n"
+                                "  <cellStyles count=\"1\">\n"
+                                "    <cellStyle name=\"Normal\" xfId=\"0\" builtinId=\"0\"/>\n"
+                                "  </cellStyles>\n"
+                                "</styleSheet>");
 
     snprintf(zip_entries[4].filename, sizeof(zip_entries[4].filename), "xl/styles.xml");
     zip_entries[4].uncomp_data = (unsigned char *)styles_buf.data;
@@ -440,7 +443,8 @@ lxw_error workbook_close(lxw_workbook *workbook) {
         lxw_worksheet *ws = &workbook->sheets[s];
 
         buf_append_str(&sheet_bufs[s], "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
-        buf_append_str(&sheet_bufs[s], "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">\n");
+        buf_append_str(&sheet_bufs[s],
+                       "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">\n");
 
         if (ws->col_width_count > 0) {
             buf_append_str(&sheet_bufs[s], "  <cols>\n");
@@ -478,11 +482,11 @@ lxw_error workbook_close(lxw_workbook *workbook) {
                 if (cell->is_number) {
                     char c_tag[128];
                     if (cell->number_value == (double)(int64_t)cell->number_value) {
-                        snprintf(c_tag, sizeof(c_tag), "      <c r=\"%s%u\"><v>%lld</v></c>\n", col_name,
-                                 curr_row + 1, (long long)cell->number_value);
+                        snprintf(c_tag, sizeof(c_tag), "      <c r=\"%s%u\"><v>%lld</v></c>\n", col_name, curr_row + 1,
+                                 (long long)cell->number_value);
                     } else {
-                        snprintf(c_tag, sizeof(c_tag), "      <c r=\"%s%u\"><v>%.2f</v></c>\n", col_name,
-                                 curr_row + 1, cell->number_value);
+                        snprintf(c_tag, sizeof(c_tag), "      <c r=\"%s%u\"><v>%.2f</v></c>\n", col_name, curr_row + 1,
+                                 cell->number_value);
                     }
                     buf_append_str(&sheet_bufs[s], c_tag);
                 } else {
@@ -508,8 +512,8 @@ lxw_error workbook_close(lxw_workbook *workbook) {
         buf_append_str(&sheet_bufs[s], "</worksheet>");
 
         size_t entry_idx = 5 + s;
-        snprintf(zip_entries[entry_idx].filename, sizeof(zip_entries[entry_idx].filename),
-                 "xl/worksheets/sheet%zu.xml", s + 1);
+        snprintf(zip_entries[entry_idx].filename, sizeof(zip_entries[entry_idx].filename), "xl/worksheets/sheet%zu.xml",
+                 s + 1);
         zip_entries[entry_idx].uncomp_data = (unsigned char *)sheet_bufs[s].data;
         zip_entries[entry_idx].uncomp_size = sheet_bufs[s].size;
     }

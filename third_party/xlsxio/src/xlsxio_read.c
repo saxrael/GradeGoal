@@ -170,13 +170,14 @@ static unsigned char *zip_extract_entry(FILE *fp, const ZipEntry *e) {
         strm.next_out = uncomp_buf;
         strm.avail_out = (uInt)e->uncomp_size;
         ret = inflate(&strm, Z_FINISH);
+        size_t total_out = (size_t)strm.total_out;
         inflateEnd(&strm);
         free(comp_buf);
-        if (ret != Z_STREAM_END && ret != Z_OK) {
+        if (ret != Z_STREAM_END) {
             free(uncomp_buf);
             return NULL;
         }
-        uncomp_buf[e->uncomp_size] = '\0';
+        uncomp_buf[total_out] = '\0';
         return uncomp_buf;
     }
 
@@ -561,6 +562,9 @@ static void parse_worksheet_xml(struct xlsxio_read_sheet_struct *sheet, const ch
             const char *r_attr = strstr(c_start, "r=\"");
             if (r_attr != NULL && r_attr < c_open_end) {
                 col_idx = col_letters_to_index(r_attr + 3);
+            }
+            if (col_idx > 1024) {
+                col_idx = 1024;
             }
 
             char t_attr[32] = {0};
