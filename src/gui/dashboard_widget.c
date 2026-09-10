@@ -510,22 +510,22 @@ GtkWidget *gg_dashboard_widget_create(GGAppContext *ctx) {
     }
     state->ctx = ctx;
 
-    state->container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 16);
-    gtk_widget_set_margin_top(state->container, 20);
-    gtk_widget_set_margin_bottom(state->container, 20);
-    gtk_widget_set_margin_start(state->container, 24);
-    gtk_widget_set_margin_end(state->container, 24);
+    GtkWidget *content_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 16);
+    gtk_widget_set_margin_top(content_box, 20);
+    gtk_widget_set_margin_bottom(content_box, 20);
+    gtk_widget_set_margin_start(content_box, 24);
+    gtk_widget_set_margin_end(content_box, 24);
 
     GtkWidget *screen_title = gtk_label_new("Dashboard");
     gtk_widget_add_css_class(screen_title, "screen-title");
     gtk_widget_set_halign(screen_title, GTK_ALIGN_START);
-    gtk_box_append(GTK_BOX(state->container), screen_title);
+    gtk_box_append(GTK_BOX(content_box), screen_title);
 
     GtkWidget *screen_sub = gtk_label_new("Cumulative academic performance overview and registered coursework");
     gtk_widget_add_css_class(screen_sub, "dim-label");
     gtk_widget_set_halign(screen_sub, GTK_ALIGN_START);
     gtk_widget_set_margin_bottom(screen_sub, 4);
-    gtk_box_append(GTK_BOX(state->container), screen_sub);
+    gtk_box_append(GTK_BOX(content_box), screen_sub);
 
     GtkWidget *metrics_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
     GtkWidget *card_cgpa = create_metric_card("CURRENT CGPA", "Scale 5.00 Max", &state->cgpa_val_label, "accent-cgpa");
@@ -542,7 +542,7 @@ GtkWidget *gg_dashboard_widget_create(GGAppContext *ctx) {
     gtk_box_append(GTK_BOX(metrics_box), card_tcp);
     gtk_box_append(GTK_BOX(metrics_box), card_tcu);
     gtk_box_append(GTK_BOX(metrics_box), card_standing);
-    gtk_box_append(GTK_BOX(state->container), metrics_box);
+    gtk_box_append(GTK_BOX(content_box), metrics_box);
 
     GtkWidget *section_header = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
     GtkWidget *semesters_title = gtk_label_new("Academic History Overview");
@@ -556,14 +556,10 @@ GtkWidget *gg_dashboard_widget_create(GGAppContext *ctx) {
 
     gtk_box_append(GTK_BOX(section_header), semesters_title);
     gtk_box_append(GTK_BOX(section_header), quick_add_btn);
-    gtk_box_append(GTK_BOX(state->container), section_header);
+    gtk_box_append(GTK_BOX(content_box), section_header);
 
-    GtkWidget *scroll = gtk_scrolled_window_new();
-    gtk_widget_set_vexpand(scroll, TRUE);
-
-    GtkWidget *scroll_content = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
     state->semesters_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
-    gtk_box_append(GTK_BOX(scroll_content), state->semesters_box);
+    gtk_box_append(GTK_BOX(content_box), state->semesters_box);
 
     GtkWidget *empty_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
     gtk_widget_add_css_class(empty_card, "empty-state-card");
@@ -581,10 +577,13 @@ GtkWidget *gg_dashboard_widget_create(GGAppContext *ctx) {
     gtk_box_append(GTK_BOX(empty_card), empty_title);
     gtk_box_append(GTK_BOX(empty_card), empty_desc);
     state->empty_label = empty_card;
-    gtk_box_append(GTK_BOX(scroll_content), state->empty_label);
+    gtk_box_append(GTK_BOX(content_box), state->empty_label);
 
-    gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scroll), scroll_content);
-    gtk_box_append(GTK_BOX(state->container), scroll);
+    state->container = gtk_scrolled_window_new();
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(state->container), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+    gtk_widget_set_vexpand(state->container, TRUE);
+    gtk_widget_set_hexpand(state->container, TRUE);
+    gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(state->container), content_box);
 
     g_object_set_data_full(G_OBJECT(state->container), "state", state, free);
 

@@ -689,16 +689,16 @@ GtkWidget *gg_settings_widget_create(GGAppContext *ctx) {
     }
     state->ctx = ctx;
 
-    state->container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 16);
-    gtk_widget_set_margin_top(state->container, 20);
-    gtk_widget_set_margin_bottom(state->container, 20);
-    gtk_widget_set_margin_start(state->container, 24);
-    gtk_widget_set_margin_end(state->container, 24);
+    GtkWidget *content_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 16);
+    gtk_widget_set_margin_top(content_box, 20);
+    gtk_widget_set_margin_bottom(content_box, 20);
+    gtk_widget_set_margin_start(content_box, 24);
+    gtk_widget_set_margin_end(content_box, 24);
 
     GtkWidget *title = gtk_label_new("Settings");
     gtk_widget_add_css_class(title, "screen-title");
     gtk_widget_set_halign(title, GTK_ALIGN_START);
-    gtk_box_append(GTK_BOX(state->container), title);
+    gtk_box_append(GTK_BOX(content_box), title);
 
     GtkWidget *scale_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_widget_add_css_class(scale_card, "card");
@@ -745,7 +745,7 @@ GtkWidget *gg_settings_widget_create(GGAppContext *ctx) {
     gtk_widget_set_halign(state->save_scale_btn, GTK_ALIGN_START);
     g_signal_connect(state->save_scale_btn, "clicked", G_CALLBACK(on_save_scale_clicked), state);
     gtk_box_append(GTK_BOX(scale_card), state->save_scale_btn);
-    gtk_box_append(GTK_BOX(state->container), scale_card);
+    gtk_box_append(GTK_BOX(content_box), scale_card);
 
     GtkWidget *prior_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_widget_add_css_class(prior_card, "card");
@@ -769,7 +769,7 @@ GtkWidget *gg_settings_widget_create(GGAppContext *ctx) {
     gtk_widget_set_halign(update_prior_btn, GTK_ALIGN_START);
     g_signal_connect(update_prior_btn, "clicked", G_CALLBACK(on_update_prior_clicked), state);
     gtk_box_append(GTK_BOX(prior_card), update_prior_btn);
-    gtk_box_append(GTK_BOX(state->container), prior_card);
+    gtk_box_append(GTK_BOX(content_box), prior_card);
 
     GtkWidget *export_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_widget_add_css_class(export_card, "card");
@@ -791,7 +791,7 @@ GtkWidget *gg_settings_widget_create(GGAppContext *ctx) {
     gtk_box_append(GTK_BOX(export_btns_box), export_xlsx_btn);
     gtk_box_append(GTK_BOX(export_btns_box), export_pdf_btn);
     gtk_box_append(GTK_BOX(export_card), export_btns_box);
-    gtk_box_append(GTK_BOX(state->container), export_card);
+    gtk_box_append(GTK_BOX(content_box), export_card);
 
     GtkWidget *import_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_widget_add_css_class(import_card, "card");
@@ -810,7 +810,7 @@ GtkWidget *gg_settings_widget_create(GGAppContext *ctx) {
     gtk_widget_set_halign(import_btn, GTK_ALIGN_START);
     g_signal_connect(import_btn, "clicked", G_CALLBACK(on_import_backup_clicked), state);
     gtk_box_append(GTK_BOX(import_card), import_btn);
-    gtk_box_append(GTK_BOX(state->container), import_card);
+    gtk_box_append(GTK_BOX(content_box), import_card);
 
     GtkWidget *backup_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_widget_add_css_class(backup_card, "card");
@@ -827,7 +827,13 @@ GtkWidget *gg_settings_widget_create(GGAppContext *ctx) {
     state->backup_status_label = gtk_label_new("Checking backup status...");
     gtk_widget_set_halign(state->backup_status_label, GTK_ALIGN_START);
     gtk_box_append(GTK_BOX(backup_card), state->backup_status_label);
-    gtk_box_append(GTK_BOX(state->container), backup_card);
+    gtk_box_append(GTK_BOX(content_box), backup_card);
+
+    state->container = gtk_scrolled_window_new();
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(state->container), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+    gtk_widget_set_vexpand(state->container, TRUE);
+    gtk_widget_set_hexpand(state->container, TRUE);
+    gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(state->container), content_box);
 
     g_object_set_data_full(G_OBJECT(state->container), "state", state, free);
 

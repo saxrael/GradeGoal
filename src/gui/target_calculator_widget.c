@@ -248,16 +248,16 @@ GtkWidget *gg_target_calculator_widget_create(GGAppContext *ctx) {
     }
     state->ctx = ctx;
 
-    state->container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 16);
-    gtk_widget_set_margin_top(state->container, 20);
-    gtk_widget_set_margin_bottom(state->container, 20);
-    gtk_widget_set_margin_start(state->container, 24);
-    gtk_widget_set_margin_end(state->container, 24);
+    GtkWidget *content_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 16);
+    gtk_widget_set_margin_top(content_box, 20);
+    gtk_widget_set_margin_bottom(content_box, 20);
+    gtk_widget_set_margin_start(content_box, 24);
+    gtk_widget_set_margin_end(content_box, 24);
 
     GtkWidget *title = gtk_label_new("Target Calculator");
     gtk_widget_add_css_class(title, "screen-title");
     gtk_widget_set_halign(title, GTK_ALIGN_START);
-    gtk_box_append(GTK_BOX(state->container), title);
+    gtk_box_append(GTK_BOX(content_box), title);
 
     GtkWidget *target_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_widget_add_css_class(target_card, "card");
@@ -296,7 +296,7 @@ GtkWidget *gg_target_calculator_widget_create(GGAppContext *ctx) {
     gtk_box_append(GTK_BOX(target_card), target_header);
     gtk_box_append(GTK_BOX(target_card), target_subtitle);
     gtk_box_append(GTK_BOX(target_card), target_input_row);
-    gtk_box_append(GTK_BOX(state->container), target_card);
+    gtk_box_append(GTK_BOX(content_box), target_card);
 
     GtkWidget *courses_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_widget_add_css_class(courses_card, "card");
@@ -345,11 +345,8 @@ GtkWidget *gg_target_calculator_widget_create(GGAppContext *ctx) {
     gtk_box_append(GTK_BOX(table_header), th_act);
     gtk_box_append(GTK_BOX(courses_card), table_header);
 
-    GtkWidget *scroll = gtk_scrolled_window_new();
-    gtk_widget_set_size_request(scroll, -1, 180);
     state->courses_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
-    gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scroll), state->courses_box);
-    gtk_box_append(GTK_BOX(courses_card), scroll);
+    gtk_box_append(GTK_BOX(courses_card), state->courses_box);
 
     for (int i = 0; i < 3; i++) {
         GGCourseEntry initial;
@@ -362,7 +359,7 @@ GtkWidget *gg_target_calculator_widget_create(GGAppContext *ctx) {
         state->row_count++;
     }
 
-    gtk_box_append(GTK_BOX(state->container), courses_card);
+    gtk_box_append(GTK_BOX(content_box), courses_card);
 
     state->result_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_widget_add_css_class(state->result_card, "card");
@@ -383,7 +380,13 @@ GtkWidget *gg_target_calculator_widget_create(GGAppContext *ctx) {
     gtk_box_append(GTK_BOX(state->result_card), state->result_detail_label);
     gtk_box_append(GTK_BOX(state->result_card), state->assignments_box);
 
-    gtk_box_append(GTK_BOX(state->container), state->result_card);
+    gtk_box_append(GTK_BOX(content_box), state->result_card);
+
+    state->container = gtk_scrolled_window_new();
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(state->container), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+    gtk_widget_set_vexpand(state->container, TRUE);
+    gtk_widget_set_hexpand(state->container, TRUE);
+    gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(state->container), content_box);
 
     g_object_set_data_full(G_OBJECT(state->container), "state", state, free);
 

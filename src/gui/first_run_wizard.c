@@ -282,6 +282,7 @@ GtkWidget *gg_first_run_wizard_create(GtkWindow *parent, GGAppContext *ctx, GCal
     gtk_box_append(GTK_BOX(page_scale), scale_table_hdr);
 
     GtkWidget *scroll = gtk_scrolled_window_new();
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
     gtk_widget_set_vexpand(scroll, TRUE);
     state->grade_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
     gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scroll), state->grade_box);

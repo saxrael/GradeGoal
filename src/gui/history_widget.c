@@ -517,22 +517,22 @@ GtkWidget *gg_history_widget_create(GGAppContext *ctx) {
     }
     state->ctx = ctx;
 
-    state->container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 16);
-    gtk_widget_set_margin_top(state->container, 20);
-    gtk_widget_set_margin_bottom(state->container, 20);
-    gtk_widget_set_margin_start(state->container, 24);
-    gtk_widget_set_margin_end(state->container, 24);
+    GtkWidget *content_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 16);
+    gtk_widget_set_margin_top(content_box, 20);
+    gtk_widget_set_margin_bottom(content_box, 20);
+    gtk_widget_set_margin_start(content_box, 24);
+    gtk_widget_set_margin_end(content_box, 24);
 
     GtkWidget *title = gtk_label_new("History");
     gtk_widget_add_css_class(title, "screen-title");
     gtk_widget_set_halign(title, GTK_ALIGN_START);
-    gtk_box_append(GTK_BOX(state->container), title);
+    gtk_box_append(GTK_BOX(content_box), title);
 
     GtkWidget *screen_sub = gtk_label_new("View, filter, edit, or remove all recorded academic courses");
     gtk_widget_add_css_class(screen_sub, "dim-label");
     gtk_widget_set_halign(screen_sub, GTK_ALIGN_START);
     gtk_widget_set_margin_bottom(screen_sub, 4);
-    gtk_box_append(GTK_BOX(state->container), screen_sub);
+    gtk_box_append(GTK_BOX(content_box), screen_sub);
 
     GtkWidget *filter_bar = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
     GtkWidget *filter_label = gtk_label_new("Filter by Semester:");
@@ -550,7 +550,7 @@ GtkWidget *gg_history_widget_create(GGAppContext *ctx) {
     gtk_box_append(GTK_BOX(filter_bar), filter_label);
     gtk_box_append(GTK_BOX(filter_bar), state->filter_dropdown);
     gtk_box_append(GTK_BOX(filter_bar), new_sem_btn);
-    gtk_box_append(GTK_BOX(state->container), filter_bar);
+    gtk_box_append(GTK_BOX(content_box), filter_bar);
 
     GtkWidget *add_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_widget_add_css_class(add_card, "card");
@@ -620,14 +620,10 @@ GtkWidget *gg_history_widget_create(GGAppContext *ctx) {
     gtk_box_append(GTK_BOX(form_row), col_grade);
     gtk_box_append(GTK_BOX(form_row), col_btn);
     gtk_box_append(GTK_BOX(add_card), form_row);
-    gtk_box_append(GTK_BOX(state->container), add_card);
+    gtk_box_append(GTK_BOX(content_box), add_card);
 
-    GtkWidget *scroll = gtk_scrolled_window_new();
-    gtk_widget_set_vexpand(scroll, TRUE);
-
-    GtkWidget *scroll_content = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
     state->table_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
-    gtk_box_append(GTK_BOX(scroll_content), state->table_box);
+    gtk_box_append(GTK_BOX(content_box), state->table_box);
 
     GtkWidget *empty_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
     gtk_widget_add_css_class(empty_card, "empty-state-card");
@@ -645,10 +641,13 @@ GtkWidget *gg_history_widget_create(GGAppContext *ctx) {
     gtk_box_append(GTK_BOX(empty_card), empty_title);
     gtk_box_append(GTK_BOX(empty_card), empty_desc);
     state->empty_label = empty_card;
-    gtk_box_append(GTK_BOX(scroll_content), state->empty_label);
+    gtk_box_append(GTK_BOX(content_box), state->empty_label);
 
-    gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scroll), scroll_content);
-    gtk_box_append(GTK_BOX(state->container), scroll);
+    state->container = gtk_scrolled_window_new();
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(state->container), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+    gtk_widget_set_vexpand(state->container, TRUE);
+    gtk_widget_set_hexpand(state->container, TRUE);
+    gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(state->container), content_box);
 
     g_object_set_data_full(G_OBJECT(state->container), "state", state, free);
 
