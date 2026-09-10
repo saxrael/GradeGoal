@@ -1,3 +1,6 @@
+#define _DEFAULT_SOURCE
+#define _POSIX_C_SOURCE 200809L
+
 #include "../include/xlsxio_read.h"
 #include <stdint.h>
 #include <stdio.h>

@@ -1,8 +1,23 @@
+#define _DEFAULT_SOURCE
+#define _POSIX_C_SOURCE 200809L
+
 #include "../include/xlsxwriter.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <zlib.h>
+
+static char *my_strdup(const char *src) {
+    if (src == NULL) {
+        return NULL;
+    }
+    size_t len = strlen(src);
+    char *dst = (char *)malloc(len + 1);
+    if (dst != NULL) {
+        memcpy(dst, src, len + 1);
+    }
+    return dst;
+}
 
 struct lxw_format {
     int bold;
@@ -162,21 +177,21 @@ static int compress_deflate(const unsigned char *in_data, size_t in_size, unsign
         *out_crc = (uint32_t)crc32(*out_crc, in_data, (uInt)in_size);
     }
 
-    z_stream strm;
-    memset(&strm, 0, sizeof(strm));
-    int ret = deflateInit2(&strm, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -MAX_WBITS, 8, Z_DEFAULT_STRATEGY);
-    if (ret != Z_OK) {
+    size_t bound = in_size + 1024 + (in_size / 4);
+    unsigned char *compressed = (unsigned char *)malloc(bound);
+    if (compressed == NULL) {
         return -1;
     }
 
-    uLong bound = deflateBound(&strm, (uLong)in_size) + 64;
-    if (bound < (uLong)in_size + 128) {
-        bound = (uLong)in_size + 128;
-    }
+    z_stream strm;
+    memset(&strm, 0, sizeof(strm));
+    strm.zalloc = Z_NULL;
+    strm.zfree = Z_NULL;
+    strm.opaque = Z_NULL;
 
-    unsigned char *compressed = (unsigned char *)malloc(bound);
-    if (compressed == NULL) {
-        deflateEnd(&strm);
+    int ret = deflateInit2(&strm, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -MAX_WBITS, 8, Z_DEFAULT_STRATEGY);
+    if (ret != Z_OK) {
+        free(compressed);
         return -1;
     }
 
@@ -264,7 +279,7 @@ lxw_error worksheet_write_string(lxw_worksheet *worksheet, lxw_row_t row, lxw_co
     cell->col = col;
     cell->is_number = 0;
     cell->number_value = 0.0;
-    cell->str_value = strdup(string);
+    cell->str_value = my_strdup(string);
     cell->bold = (format != NULL && format->bold != 0) ? 1 : 0;
     return LXW_NO_ERROR;
 }
