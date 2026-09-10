@@ -41,7 +41,7 @@ jobs:
       - name: Install macOS Dependencies
         if: runner.os == 'macOS'
         run: |
-          brew install gtk4 sqlite zlib expat libpng create-dmg
+          brew install pkg-config gtk4 sqlite zlib expat libpng create-dmg
 
       - name: Setup Windows Environment
         if: runner.os == 'Windows'
@@ -67,7 +67,12 @@ jobs:
 
       - name: Configure CMake
         if: runner.os != 'Windows'
-        run: cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        run: |
+          if [ "${{ runner.os }}" = "macOS" ]; then
+            cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_PREFIX_PATH="$(brew --prefix)"
+          else
+            cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          fi
 
       - name: Build All Targets (Windows)
         if: runner.os == 'Windows'

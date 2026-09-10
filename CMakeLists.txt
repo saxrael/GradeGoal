@@ -209,12 +209,19 @@ if(GTK4_FOUND AND TARGET gg_io)
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
         ${GTK4_INCLUDE_DIRS}
     )
+    target_link_directories(gg_gui PUBLIC
+        ${GTK4_LIBRARY_DIRS}
+    )
+    if(APPLE)
+        target_link_directories(gg_gui PUBLIC /opt/homebrew/lib /usr/local/lib)
+    endif()
     target_link_libraries(gg_gui
         PUBLIC gg_core gg_persistence gg_io ${GTK4_LIBRARIES}
         PRIVATE gg_warnings
     )
     if(FONTCONFIG_FOUND)
         target_include_directories(gg_gui PRIVATE ${FONTCONFIG_INCLUDE_DIRS})
+        target_link_directories(gg_gui PUBLIC ${FONTCONFIG_LIBRARY_DIRS})
         target_link_libraries(gg_gui PUBLIC ${FONTCONFIG_LIBRARIES})
     endif()
 
@@ -224,6 +231,10 @@ if(GTK4_FOUND AND TARGET gg_io)
     endif()
 
     add_executable(GradeGoal src/main.c ${GG_PLATFORM_SOURCES})
+    target_link_directories(GradeGoal PRIVATE ${GTK4_LIBRARY_DIRS})
+    if(APPLE)
+        target_link_directories(GradeGoal PRIVATE /opt/homebrew/lib /usr/local/lib)
+    endif()
     target_link_libraries(GradeGoal PRIVATE gg_gui gg_warnings)
 
     install(TARGETS GradeGoal DESTINATION bin)
