@@ -18,12 +18,22 @@ typedef struct {
     GtkWidget *container;
     GtkWidget *scale_box;
     GtkWidget *save_scale_btn;
+    GtkWidget *prior_status_label;
     GtkWidget *backup_status_label;
     GGGradeRow *rows[16];
     size_t row_count;
     GGGradingScale original_scale;
     GGGradingScale proposed_scale;
 } GGSettingsState;
+
+typedef struct {
+    GGSettingsState *settings_state;
+    GtkWidget *dialog_window;
+    GtkWidget *tcp_entry;
+    GtkWidget *tcu_entry;
+    GtkWidget *zero_check;
+    GtkWidget *preview_label;
+} GGPriorStandingDialogState;
 
 static void on_scale_save_confirmed(bool confirmed, gpointer user_data) {
     GGSettingsState *state = (GGSettingsState *)user_data;
@@ -110,6 +120,293 @@ static void on_save_scale_clicked(GtkButton *button, gpointer user_data) {
     gg_confirmation_dialog_show(state->ctx->main_window, "Confirm Grading Scale Edit",
                                 "Modifying grading scale points affects all prior courses", detail_msg,
                                 "Save and Recalculate", "Cancel", false, on_scale_save_confirmed, state);
+}
+
+static void get_current_prior_standing(GGSettingsState *state, double *out_tcp, uint32_t *out_tcu) {
+    *out_tcp = 0.0;
+    *out_tcu = 0;
+    if (state == NULL || state->ctx == NULL || state->ctx->course_repo == NULL) {
+        return;
+    }
+    GGCourseList *courses = NULL;
+    GGStatus st = state->ctx->course_repo->list_courses_by_semester(state->ctx->course_repo->context,
+                                                                   "Initial Standing", &courses);
+    if (st == GG_OK && courses != NULL) {
+        for (size_t i = 0; i < courses->count; i++) {
+            *out_tcu += courses->entries[i].credit_unit;
+            for (size_t s = 0; s < state->original_scale.count; s++) {
+                if (strcmp(courses->entries[i].grade_symbol, state->original_scale.items[s].grade_symbol) == 0) {
+                    *out_tcp += (double)courses->entries[i].credit_unit * state->original_scale.items[s].grade_point;
+                    break;
+                }
+            }
+        }
+        gg_course_list_destroy(courses);
+    }
+}
+
+static void on_prior_dialog_changed(GtkEditable *editable, gpointer user_data) {
+    (void)editable;
+    GGPriorStandingDialogState *dlg = (GGPriorStandingDialogState *)user_data;
+    if (dlg == NULL || dlg->preview_label == NULL) {
+        return;
+    }
+    gboolean is_zero = gtk_check_button_get_active(GTK_CHECK_BUTTON(dlg->zero_check));
+    if (is_zero) {
+        gtk_label_set_text(GTK_LABEL(dlg->preview_label), "Resulting Baseline CGPA: 0.00 (No prior standing)");
+        return;
+    }
+    const char *tcp_str = gtk_editable_get_text(GTK_EDITABLE(dlg->tcp_entry));
+    const char *tcu_str = gtk_editable_get_text(GTK_EDITABLE(dlg->tcu_entry));
+    double tcp = tcp_str != NULL ? strtod(tcp_str, NULL) : 0.0;
+    uint32_t tcu = tcu_str != NULL ? (uint32_t)strtoul(tcu_str, NULL, 10) : 0;
+    double cgpa = 0.0;
+    gg_cgpa_calculate(tcp, tcu, &cgpa);
+    char buf[128];
+    snprintf(buf, sizeof(buf), "Resulting Baseline CGPA: %.2f (from %.2f TCP / %u TCU)", cgpa, tcp, tcu);
+    gtk_label_set_text(GTK_LABEL(dlg->preview_label), buf);
+}
+
+static void on_prior_zero_toggled(GtkCheckButton *check, gpointer user_data) {
+    GGPriorStandingDialogState *dlg = (GGPriorStandingDialogState *)user_data;
+    if (dlg == NULL) {
+        return;
+    }
+    gboolean active = gtk_check_button_get_active(check);
+    if (active) {
+        gtk_editable_set_text(GTK_EDITABLE(dlg->tcp_entry), "0.00");
+        gtk_editable_set_text(GTK_EDITABLE(dlg->tcu_entry), "0");
+        gtk_widget_set_sensitive(dlg->tcp_entry, FALSE);
+        gtk_widget_set_sensitive(dlg->tcu_entry, FALSE);
+    } else {
+        gtk_widget_set_sensitive(dlg->tcp_entry, TRUE);
+        gtk_widget_set_sensitive(dlg->tcu_entry, TRUE);
+    }
+    on_prior_dialog_changed(NULL, dlg);
+}
+
+static void on_prior_dialog_cancel(GtkButton *button, gpointer user_data) {
+    (void)button;
+    GGPriorStandingDialogState *dlg = (GGPriorStandingDialogState *)user_data;
+    if (dlg != NULL) {
+        gtk_window_destroy(GTK_WINDOW(dlg->dialog_window));
+    }
+}
+
+static void on_prior_standing_submit(GtkButton *button, gpointer user_data) {
+    (void)button;
+    GGPriorStandingDialogState *dlg = (GGPriorStandingDialogState *)user_data;
+    if (dlg == NULL || dlg->settings_state == NULL || dlg->settings_state->ctx == NULL ||
+        dlg->settings_state->ctx->course_repo == NULL) {
+        return;
+    }
+    GGAppContext *ctx = dlg->settings_state->ctx;
+
+    GGCourseList *initial_courses = NULL;
+    GGStatus st = ctx->course_repo->list_courses_by_semester(ctx->course_repo->context, "Initial Standing",
+                                                            &initial_courses);
+    if (st == GG_OK && initial_courses != NULL) {
+        for (size_t i = 0; i < initial_courses->count; i++) {
+            ctx->course_repo->delete_course(ctx->course_repo->context, initial_courses->entries[i].id);
+        }
+        gg_course_list_destroy(initial_courses);
+    }
+
+    gboolean is_zero = gtk_check_button_get_active(GTK_CHECK_BUTTON(dlg->zero_check));
+    if (!is_zero) {
+        const char *tcp_str = gtk_editable_get_text(GTK_EDITABLE(dlg->tcp_entry));
+        const char *tcu_str = gtk_editable_get_text(GTK_EDITABLE(dlg->tcu_entry));
+        double prior_tcp = tcp_str != NULL ? strtod(tcp_str, NULL) : 0.0;
+        uint32_t prior_tcu = tcu_str != NULL ? (uint32_t)strtoul(tcu_str, NULL, 10) : 0;
+
+        GGGradingScale scale;
+        memset(&scale, 0, sizeof(scale));
+        if (ctx->scale_repo != NULL) {
+            ctx->scale_repo->load_scale(ctx->scale_repo->context, &scale);
+        }
+
+        if (prior_tcu > 0 && scale.count > 0) {
+            double max_achievable = (double)prior_tcu * scale.max_point;
+            double min_achievable = (double)prior_tcu * scale.min_point;
+            if (prior_tcp > max_achievable) {
+                prior_tcp = max_achievable;
+            }
+            if (prior_tcp < min_achievable) {
+                prior_tcp = min_achievable;
+            }
+
+            double avg = prior_tcp / (double)prior_tcu;
+            size_t idx_a = 0;
+            size_t idx_b = scale.count - 1;
+            for (size_t i = 0; i + 1 < scale.count; i++) {
+                if (scale.items[i].grade_point >= avg && scale.items[i + 1].grade_point <= avg) {
+                    idx_a = i;
+                    idx_b = i + 1;
+                    break;
+                }
+            }
+
+            double pa = scale.items[idx_a].grade_point;
+            double pb = scale.items[idx_b].grade_point;
+            uint32_t ua = 0;
+            uint32_t ub = 0;
+
+            if (pa > pb) {
+                double calc_ua = ((prior_tcp - (double)prior_tcu * pb) / (pa - pb)) + 0.5;
+                if (calc_ua < 0.0) {
+                    calc_ua = 0.0;
+                }
+                if (calc_ua > (double)prior_tcu) {
+                    calc_ua = (double)prior_tcu;
+                }
+                ua = (uint32_t)calc_ua;
+                ub = prior_tcu - ua;
+            } else {
+                ua = prior_tcu;
+                ub = 0;
+            }
+
+            int64_t entry_time = (int64_t)time(NULL);
+            if (ua > 0) {
+                GGCourseEntry entry_a;
+                memset(&entry_a, 0, sizeof(entry_a));
+                snprintf(entry_a.semester_label, sizeof(entry_a.semester_label), "Initial Standing");
+                snprintf(entry_a.course_label, sizeof(entry_a.course_label), "Prior Transfer Credits");
+                entry_a.credit_unit = ua;
+                snprintf(entry_a.grade_symbol, sizeof(entry_a.grade_symbol), "%s", scale.items[idx_a].grade_symbol);
+                entry_a.entry_date = entry_time;
+                int64_t id_out = 0;
+                ctx->course_repo->insert_course(ctx->course_repo->context, &entry_a, &id_out);
+            }
+
+            if (ub > 0) {
+                GGCourseEntry entry_b;
+                memset(&entry_b, 0, sizeof(entry_b));
+                snprintf(entry_b.semester_label, sizeof(entry_b.semester_label), "Initial Standing");
+                snprintf(entry_b.course_label, sizeof(entry_b.course_label), "Prior Transfer Credits");
+                entry_b.credit_unit = ub;
+                snprintf(entry_b.grade_symbol, sizeof(entry_b.grade_symbol), "%s", scale.items[idx_b].grade_symbol);
+                entry_b.entry_date = entry_time;
+                int64_t id_out = 0;
+                ctx->course_repo->insert_course(ctx->course_repo->context, &entry_b, &id_out);
+            }
+        }
+    }
+
+    gg_backup_create_snapshot(ctx->db_filepath, ctx->backup_dir);
+    gg_settings_widget_refresh(dlg->settings_state->container);
+    gtk_window_destroy(GTK_WINDOW(dlg->dialog_window));
+}
+
+static void on_update_prior_clicked(GtkButton *button, gpointer user_data) {
+    (void)button;
+    GGSettingsState *state = (GGSettingsState *)user_data;
+    if (state == NULL || state->ctx == NULL) {
+        return;
+    }
+
+    GGPriorStandingDialogState *dlg = (GGPriorStandingDialogState *)calloc(1, sizeof(GGPriorStandingDialogState));
+    if (dlg == NULL) {
+        return;
+    }
+    dlg->settings_state = state;
+
+    dlg->dialog_window = gtk_window_new();
+    gtk_window_set_title(GTK_WINDOW(dlg->dialog_window), "Update Prior Academic Standing");
+    gtk_window_set_transient_for(GTK_WINDOW(dlg->dialog_window), state->ctx->main_window);
+    gtk_window_set_modal(GTK_WINDOW(dlg->dialog_window), TRUE);
+    gtk_window_set_default_size(GTK_WINDOW(dlg->dialog_window), 500, 380);
+
+    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 14);
+    gtk_widget_set_margin_top(vbox, 20);
+    gtk_widget_set_margin_bottom(vbox, 20);
+    gtk_widget_set_margin_start(vbox, 24);
+    gtk_widget_set_margin_end(vbox, 24);
+
+    GtkWidget *dlg_title = gtk_label_new("Update Prior Academic Standing");
+    gtk_widget_add_css_class(dlg_title, "title-3");
+    gtk_widget_set_halign(dlg_title, GTK_ALIGN_START);
+    gtk_box_append(GTK_BOX(vbox), dlg_title);
+
+    GtkWidget *dlg_sub = gtk_label_new(
+        "Update baseline transfer credits or prior totals. This recalculates your CGPA without affecting semester "
+        "course records.");
+    gtk_widget_add_css_class(dlg_sub, "card-subtitle");
+    gtk_label_set_wrap(GTK_LABEL(dlg_sub), TRUE);
+    gtk_widget_set_halign(dlg_sub, GTK_ALIGN_START);
+    gtk_box_append(GTK_BOX(vbox), dlg_sub);
+
+    dlg->zero_check =
+        gtk_check_button_new_with_label("Reset prior standing to zero (fresh start / no transfer credits)");
+    g_signal_connect(dlg->zero_check, "toggled", G_CALLBACK(on_prior_zero_toggled), dlg);
+    gtk_box_append(GTK_BOX(vbox), dlg->zero_check);
+
+    GtkWidget *tcp_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+    GtkWidget *tcp_lbl = gtk_label_new("Prior Total Credit Points (TCP):");
+    gtk_widget_add_css_class(tcp_lbl, "form-label");
+    gtk_widget_set_halign(tcp_lbl, GTK_ALIGN_START);
+    dlg->tcp_entry = gtk_entry_new();
+    gtk_entry_set_placeholder_text(GTK_ENTRY(dlg->tcp_entry), "e.g. 60.00");
+    g_signal_connect(dlg->tcp_entry, "changed", G_CALLBACK(on_prior_dialog_changed), dlg);
+    gtk_box_append(GTK_BOX(tcp_box), tcp_lbl);
+    gtk_box_append(GTK_BOX(tcp_box), dlg->tcp_entry);
+    gtk_box_append(GTK_BOX(vbox), tcp_box);
+
+    GtkWidget *tcu_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+    GtkWidget *tcu_lbl = gtk_label_new("Prior Total Credit Units (TCU):");
+    gtk_widget_add_css_class(tcu_lbl, "form-label");
+    gtk_widget_set_halign(tcu_lbl, GTK_ALIGN_START);
+    dlg->tcu_entry = gtk_entry_new();
+    gtk_entry_set_placeholder_text(GTK_ENTRY(dlg->tcu_entry), "e.g. 15");
+    g_signal_connect(dlg->tcu_entry, "changed", G_CALLBACK(on_prior_dialog_changed), dlg);
+    gtk_box_append(GTK_BOX(tcu_box), tcu_lbl);
+    gtk_box_append(GTK_BOX(tcu_box), dlg->tcu_entry);
+    gtk_box_append(GTK_BOX(vbox), tcu_box);
+
+    double cur_tcp = 0.0;
+    uint32_t cur_tcu = 0;
+    get_current_prior_standing(state, &cur_tcp, &cur_tcu);
+
+    if (cur_tcu > 0) {
+        char tcp_buf[32];
+        snprintf(tcp_buf, sizeof(tcp_buf), "%.2f", cur_tcp);
+        gtk_editable_set_text(GTK_EDITABLE(dlg->tcp_entry), tcp_buf);
+
+        char tcu_buf[32];
+        snprintf(tcu_buf, sizeof(tcu_buf), "%u", cur_tcu);
+        gtk_editable_set_text(GTK_EDITABLE(dlg->tcu_entry), tcu_buf);
+    } else {
+        gtk_editable_set_text(GTK_EDITABLE(dlg->tcp_entry), "0.00");
+        gtk_editable_set_text(GTK_EDITABLE(dlg->tcu_entry), "0");
+        gtk_check_button_set_active(GTK_CHECK_BUTTON(dlg->zero_check), TRUE);
+        gtk_widget_set_sensitive(dlg->tcp_entry, FALSE);
+        gtk_widget_set_sensitive(dlg->tcu_entry, FALSE);
+    }
+
+    dlg->preview_label = gtk_label_new("");
+    gtk_widget_add_css_class(dlg->preview_label, "card-subtitle");
+    gtk_widget_set_halign(dlg->preview_label, GTK_ALIGN_START);
+    gtk_box_append(GTK_BOX(vbox), dlg->preview_label);
+    on_prior_dialog_changed(NULL, dlg);
+
+    GtkWidget *btn_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
+    gtk_widget_set_halign(btn_box, GTK_ALIGN_END);
+    gtk_widget_set_margin_top(btn_box, 8);
+
+    GtkWidget *cancel_btn = gtk_button_new_with_label("Cancel");
+    g_signal_connect(cancel_btn, "clicked", G_CALLBACK(on_prior_dialog_cancel), dlg);
+
+    GtkWidget *save_btn = gtk_button_new_with_label("Save Changes");
+    gtk_widget_add_css_class(save_btn, "suggested-action");
+    g_signal_connect(save_btn, "clicked", G_CALLBACK(on_prior_standing_submit), dlg);
+
+    gtk_box_append(GTK_BOX(btn_box), cancel_btn);
+    gtk_box_append(GTK_BOX(btn_box), save_btn);
+    gtk_box_append(GTK_BOX(vbox), btn_box);
+
+    g_object_set_data_full(G_OBJECT(dlg->dialog_window), "dialog_state", dlg, free);
+    gtk_window_set_child(GTK_WINDOW(dlg->dialog_window), vbox);
+    gtk_window_present(GTK_WINDOW(dlg->dialog_window));
 }
 
 static void on_export_xlsx_finish(GObject *source_object, GAsyncResult *res, gpointer user_data) {
@@ -350,6 +647,23 @@ void gg_settings_widget_refresh(GtkWidget *widget) {
         return;
     }
 
+    double prior_tcp = 0.0;
+    uint32_t prior_tcu = 0;
+    get_current_prior_standing(state, &prior_tcp, &prior_tcu);
+    if (state->prior_status_label != NULL) {
+        if (prior_tcu > 0) {
+            double prior_cgpa = 0.0;
+            gg_cgpa_calculate(prior_tcp, prior_tcu, &prior_cgpa);
+            char pbuf[160];
+            snprintf(pbuf, sizeof(pbuf), "Current Baseline: %.2f TCP  |  %u TCU  |  %.2f Baseline CGPA", prior_tcp,
+                     prior_tcu, prior_cgpa);
+            gtk_label_set_text(GTK_LABEL(state->prior_status_label), pbuf);
+        } else {
+            gtk_label_set_text(GTK_LABEL(state->prior_status_label),
+                               "Current Baseline: 0.00 TCP  |  0 TCU  (No prior standing recorded)");
+        }
+    }
+
     time_t last_backup = 0;
     const char *bdir = state->ctx->backup_dir != NULL ? state->ctx->backup_dir : "backups";
     GGStatus st = gg_backup_get_last_timestamp(bdir, &last_backup);
@@ -432,6 +746,30 @@ GtkWidget *gg_settings_widget_create(GGAppContext *ctx) {
     g_signal_connect(state->save_scale_btn, "clicked", G_CALLBACK(on_save_scale_clicked), state);
     gtk_box_append(GTK_BOX(scale_card), state->save_scale_btn);
     gtk_box_append(GTK_BOX(state->container), scale_card);
+
+    GtkWidget *prior_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_widget_add_css_class(prior_card, "card");
+    GtkWidget *prior_title = gtk_label_new("Prior Academic Standing (Baseline / Transfer)");
+    gtk_widget_add_css_class(prior_title, "title-3");
+    gtk_widget_set_halign(prior_title, GTK_ALIGN_START);
+    GtkWidget *prior_sub = gtk_label_new(
+        "Manage baseline Cumulative Grade Points (TCP) and Total Credit Units (TCU) transferred or earned before "
+        "GradeGoal");
+    gtk_widget_add_css_class(prior_sub, "card-subtitle");
+    gtk_widget_set_halign(prior_sub, GTK_ALIGN_START);
+    gtk_box_append(GTK_BOX(prior_card), prior_title);
+    gtk_box_append(GTK_BOX(prior_card), prior_sub);
+
+    state->prior_status_label = gtk_label_new("Loading prior standing...");
+    gtk_widget_set_halign(state->prior_status_label, GTK_ALIGN_START);
+    gtk_box_append(GTK_BOX(prior_card), state->prior_status_label);
+
+    GtkWidget *update_prior_btn = gtk_button_new_with_label("Update Prior Standing");
+    gtk_widget_add_css_class(update_prior_btn, "suggested-action");
+    gtk_widget_set_halign(update_prior_btn, GTK_ALIGN_START);
+    g_signal_connect(update_prior_btn, "clicked", G_CALLBACK(on_update_prior_clicked), state);
+    gtk_box_append(GTK_BOX(prior_card), update_prior_btn);
+    gtk_box_append(GTK_BOX(state->container), prior_card);
 
     GtkWidget *export_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_widget_add_css_class(export_card, "card");

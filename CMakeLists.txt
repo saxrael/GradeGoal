@@ -97,15 +97,19 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/persistence/sqlite_connection.c")
     endif()
 endif()
 
+find_package(ZLIB REQUIRED)
+
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/libxlsxwriter/src/xlsxwriter.c")
     add_library(xlsxwriter STATIC third_party/libxlsxwriter/src/xlsxwriter.c)
     target_include_directories(xlsxwriter PUBLIC third_party/libxlsxwriter/include)
+    target_link_libraries(xlsxwriter PRIVATE ZLIB::ZLIB)
     set(GG_XLSXWRITER_TARGET xlsxwriter)
 endif()
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/xlsxio/src/xlsxio_read.c")
     add_library(xlsxio_read STATIC third_party/xlsxio/src/xlsxio_read.c)
     target_include_directories(xlsxio_read PUBLIC third_party/xlsxio/include)
+    target_link_libraries(xlsxio_read PRIVATE ZLIB::ZLIB)
     set(GG_XLSXIO_TARGET xlsxio_read)
 endif()
 
@@ -127,7 +131,7 @@ if(TARGET gg_persistence AND TARGET ${GG_XLSXWRITER_TARGET} AND TARGET ${GG_XLSX
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/io>
     )
     target_link_libraries(gg_io
-        PUBLIC gg_core gg_persistence ${GG_XLSXWRITER_TARGET} ${GG_XLSXIO_TARGET} ${GG_HPDF_TARGET}
+        PUBLIC gg_core gg_persistence ${GG_XLSXWRITER_TARGET} ${GG_XLSXIO_TARGET} ${GG_HPDF_TARGET} ZLIB::ZLIB
         PRIVATE gg_warnings
     )
 endif()
