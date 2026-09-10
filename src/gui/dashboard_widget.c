@@ -1,9 +1,9 @@
 #include "dashboard_widget.h"
-#include "gg_semester_list_item.h"
-#include "gg_confirmation_dialog.h"
 #include "../core/cgpa_calculator.h"
 #include "../core/course_list.h"
 #include "../io/backup_manager.h"
+#include "gg_confirmation_dialog.h"
+#include "gg_semester_list_item.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -92,7 +92,8 @@ static void on_quick_add_submit(GtkButton *btn, gpointer user_data) {
     entry.entry_date = (int64_t)time(NULL);
 
     int64_t new_id = 0;
-    GGStatus st = dlg->dashboard_state->ctx->course_repo->insert_course(dlg->dashboard_state->ctx->course_repo->context, &entry, &new_id);
+    GGStatus st = dlg->dashboard_state->ctx->course_repo->insert_course(dlg->dashboard_state->ctx->course_repo->context,
+                                                                        &entry, &new_id);
     if (st == GG_OK) {
         gg_backup_create_snapshot(dlg->dashboard_state->ctx->db_filepath, dlg->dashboard_state->ctx->backup_dir);
         gg_dashboard_widget_refresh(dlg->dashboard_state->container);
@@ -215,7 +216,8 @@ static void on_edit_course_submit(GtkButton *btn, gpointer user_data) {
     dlg->course.credit_unit = (uint32_t)units;
     snprintf(dlg->course.grade_symbol, sizeof(dlg->course.grade_symbol), "%s", dlg->scale.items[selected].grade_symbol);
 
-    GGStatus st = dlg->dashboard_state->ctx->course_repo->update_course(dlg->dashboard_state->ctx->course_repo->context, &dlg->course);
+    GGStatus st = dlg->dashboard_state->ctx->course_repo->update_course(dlg->dashboard_state->ctx->course_repo->context,
+                                                                        &dlg->course);
     if (st == GG_OK) {
         gg_backup_create_snapshot(dlg->dashboard_state->ctx->db_filepath, dlg->dashboard_state->ctx->backup_dir);
         gg_dashboard_widget_refresh(dlg->dashboard_state->container);
@@ -328,7 +330,8 @@ static void on_dashboard_edit_course(int64_t course_id, gpointer user_data) {
 static void on_dashboard_delete_confirmed(bool confirmed, gpointer user_data) {
     GGDashboardDeleteContext *ctx = (GGDashboardDeleteContext *)user_data;
     if (confirmed && ctx != NULL && ctx->dashboard_state != NULL && ctx->dashboard_state->ctx != NULL) {
-        ctx->dashboard_state->ctx->course_repo->delete_course(ctx->dashboard_state->ctx->course_repo->context, ctx->course_id);
+        ctx->dashboard_state->ctx->course_repo->delete_course(ctx->dashboard_state->ctx->course_repo->context,
+                                                              ctx->course_id);
         gg_backup_create_snapshot(ctx->dashboard_state->ctx->db_filepath, ctx->dashboard_state->ctx->backup_dir);
         gg_dashboard_widget_refresh(ctx->dashboard_state->container);
     }
@@ -346,17 +349,9 @@ static void on_dashboard_delete_course(int64_t course_id, gpointer user_data) {
     }
     del_ctx->dashboard_state = state;
     del_ctx->course_id = course_id;
-    gg_confirmation_dialog_show(
-        state->ctx->main_window,
-        "Delete Course Entry",
-        "Delete this course record?",
-        "This action cannot be undone and will immediately update your CGPA.",
-        "Delete",
-        "Cancel",
-        true,
-        on_dashboard_delete_confirmed,
-        del_ctx
-    );
+    gg_confirmation_dialog_show(state->ctx->main_window, "Delete Course Entry", "Delete this course record?",
+                                "This action cannot be undone and will immediately update your CGPA.", "Delete",
+                                "Cancel", true, on_dashboard_delete_confirmed, del_ctx);
 }
 
 void gg_dashboard_widget_refresh(GtkWidget *widget) {
@@ -420,20 +415,16 @@ void gg_dashboard_widget_refresh(GtkWidget *widget) {
                 }
             }
             if (!found && seen_count < 32) {
-                snprintf(seen_semesters[seen_count], sizeof(seen_semesters[seen_count]), "%s", list->entries[i].semester_label);
+                snprintf(seen_semesters[seen_count], sizeof(seen_semesters[seen_count]), "%s",
+                         list->entries[i].semester_label);
                 seen_count++;
             }
         }
 
         for (size_t s = 0; s < seen_count; s++) {
-            GGSemesterListItem *item = gg_semester_list_item_create(
-                seen_semesters[s],
-                list,
-                &scale,
-                G_CALLBACK(on_dashboard_edit_course),
-                G_CALLBACK(on_dashboard_delete_course),
-                state
-            );
+            GGSemesterListItem *item =
+                gg_semester_list_item_create(seen_semesters[s], list, &scale, G_CALLBACK(on_dashboard_edit_course),
+                                             G_CALLBACK(on_dashboard_delete_course), state);
             if (item != NULL) {
                 gtk_box_append(GTK_BOX(state->semesters_box), item->container);
             }
@@ -525,7 +516,8 @@ GtkWidget *gg_dashboard_widget_create(GGAppContext *ctx) {
     state->semesters_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
     gtk_box_append(GTK_BOX(scroll_content), state->semesters_box);
 
-    state->empty_label = gtk_label_new("No academic semesters recorded yet.\nNavigate to History or use Quick Add to enter your coursework.");
+    state->empty_label = gtk_label_new(
+        "No academic semesters recorded yet.\nNavigate to History or use Quick Add to enter your coursework.");
     gtk_widget_add_css_class(state->empty_label, "dim-label");
     gtk_widget_set_margin_top(state->empty_label, 40);
     gtk_box_append(GTK_BOX(scroll_content), state->empty_label);

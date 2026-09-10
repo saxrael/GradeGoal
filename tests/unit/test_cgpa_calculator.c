@@ -1,11 +1,9 @@
-#include "unity.h"
 #include "cgpa_calculator.h"
+#include "unity.h"
 
-void setUp(void) {
-}
+void setUp(void) {}
 
-void tearDown(void) {
-}
+void tearDown(void) {}
 
 static void test_cgpa_calculate_vector_1_fresh_start(void) {
     double cgpa = -1.0;

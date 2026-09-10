@@ -1,9 +1,9 @@
 #include "app.h"
-#include "main_window.h"
-#include "gg_theme.h"
-#include "../persistence/sqlite_connection.h"
-#include "../persistence/scale_repository.h"
 #include "../persistence/course_repository.h"
+#include "../persistence/scale_repository.h"
+#include "../persistence/sqlite_connection.h"
+#include "gg_theme.h"
+#include "main_window.h"
 #include <stdlib.h>
 
 static GGDbConnection *g_db_conn = NULL;

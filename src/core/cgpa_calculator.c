@@ -14,7 +14,8 @@ GGStatus gg_cgpa_calculate(double total_tcp, uint32_t total_tcu, double *out_cgp
     return GG_OK;
 }
 
-GGStatus gg_cgpa_combine_standing(double prior_tcp, uint32_t prior_tcu, double course_tcp, uint32_t course_tcu, double *out_cgpa, double *out_combined_tcp, uint32_t *out_combined_tcu) {
+GGStatus gg_cgpa_combine_standing(double prior_tcp, uint32_t prior_tcu, double course_tcp, uint32_t course_tcu,
+                                  double *out_cgpa, double *out_combined_tcp, uint32_t *out_combined_tcu) {
     if (out_cgpa == NULL || out_combined_tcp == NULL || out_combined_tcu == NULL) {
         return GG_ERR_INVALID_ARG;
     }

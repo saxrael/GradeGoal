@@ -10,19 +10,19 @@
 #endif
 #endif
 #include "backup_manager.h"
+#include <sqlite3.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sqlite3.h>
 
 #if defined(_WIN32)
-#include <windows.h>
 #include <direct.h>
+#include <windows.h>
 #define gg_mkdir(path) _mkdir(path)
 #else
+#include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <dirent.h>
 #include <unistd.h>
 #define gg_mkdir(path) mkdir(path, 0755)
 #endif
@@ -93,19 +93,13 @@ GGStatus gg_backup_create_snapshot(const char *db_filepath, const char *backup_d
 
     char target_path[512];
 #if defined(_WIN32)
-    snprintf(target_path, sizeof(target_path),
-        "%s\\GradeGoal_backup_%04d%02d%02d_%02d%02d%02d.db",
-        backup_dir,
-        tm_info.tm_year + 1900, tm_info.tm_mon + 1, tm_info.tm_mday,
-        tm_info.tm_hour, tm_info.tm_min, tm_info.tm_sec
-    );
+    snprintf(target_path, sizeof(target_path), "%s\\GradeGoal_backup_%04d%02d%02d_%02d%02d%02d.db", backup_dir,
+             tm_info.tm_year + 1900, tm_info.tm_mon + 1, tm_info.tm_mday, tm_info.tm_hour, tm_info.tm_min,
+             tm_info.tm_sec);
 #else
-    snprintf(target_path, sizeof(target_path),
-        "%s/GradeGoal_backup_%04d%02d%02d_%02d%02d%02d.db",
-        backup_dir,
-        tm_info.tm_year + 1900, tm_info.tm_mon + 1, tm_info.tm_mday,
-        tm_info.tm_hour, tm_info.tm_min, tm_info.tm_sec
-    );
+    snprintf(target_path, sizeof(target_path), "%s/GradeGoal_backup_%04d%02d%02d_%02d%02d%02d.db", backup_dir,
+             tm_info.tm_year + 1900, tm_info.tm_mon + 1, tm_info.tm_mday, tm_info.tm_hour, tm_info.tm_min,
+             tm_info.tm_sec);
 #endif
 
     sqlite3 *src_db = NULL;
@@ -194,8 +188,8 @@ GGStatus gg_backup_get_last_timestamp(const char *backup_dir, time_t *out_timest
     int hour = 0;
     int minute = 0;
     int second = 0;
-    int parsed = sscanf(newest, "GradeGoal_backup_%04d%02d%02d_%02d%02d%02d.db",
-                        &year, &month, &day, &hour, &minute, &second);
+    int parsed =
+        sscanf(newest, "GradeGoal_backup_%04d%02d%02d_%02d%02d%02d.db", &year, &month, &day, &hour, &minute, &second);
     if (parsed != 6) {
         return GG_ERR_VALIDATION;
     }

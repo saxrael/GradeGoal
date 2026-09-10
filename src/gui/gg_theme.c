@@ -2,14 +2,14 @@
 #include "gg_gtk.h"
 #include <gio/gio.h>
 #include <pango/pangocairo.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #if defined(__has_include)
-  #if __has_include(<fontconfig/fontconfig.h>)
-    #include <fontconfig/fontconfig.h>
-    #define GG_HAVE_FONTCONFIG 1
-  #endif
+#if __has_include(<fontconfig/fontconfig.h>)
+#include <fontconfig/fontconfig.h>
+#define GG_HAVE_FONTCONFIG 1
+#endif
 #endif
 
 #ifdef _WIN32
@@ -86,19 +86,15 @@ static void register_private_fonts(void) {
 }
 
 void gg_theme_apply(bool prefer_dark) {
-    const char *css_res = prefer_dark
-        ? "/com/gradegoal/GradeGoal/theme/gradegoal-dark.css"
-        : "/com/gradegoal/GradeGoal/theme/gradegoal-light.css";
+    const char *css_res = prefer_dark ? "/com/gradegoal/GradeGoal/theme/gradegoal-dark.css"
+                                      : "/com/gradegoal/GradeGoal/theme/gradegoal-light.css";
 
     if (g_theme_provider == NULL) {
         g_theme_provider = gtk_css_provider_new();
         GdkDisplay *display = gdk_display_get_default();
         if (display != NULL) {
-            gtk_style_context_add_provider_for_display(
-                display,
-                GTK_STYLE_PROVIDER(g_theme_provider),
-                GTK_STYLE_PROVIDER_PRIORITY_APPLICATION
-            );
+            gtk_style_context_add_provider_for_display(display, GTK_STYLE_PROVIDER(g_theme_provider),
+                                                       GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
         }
     }
 
@@ -131,7 +127,8 @@ GGStatus gg_theme_init(void) {
     gboolean prefer_dark = FALSE;
     if (settings != NULL) {
         g_object_get(settings, "gtk-application-prefer-dark-theme", &prefer_dark, NULL);
-        g_theme_signal_id = g_signal_connect(settings, "notify::gtk-application-prefer-dark-theme", G_CALLBACK(on_prefer_dark_changed), NULL);
+        g_theme_signal_id = g_signal_connect(settings, "notify::gtk-application-prefer-dark-theme",
+                                             G_CALLBACK(on_prefer_dark_changed), NULL);
     }
 
     gg_theme_apply(prefer_dark != FALSE);
@@ -150,10 +147,7 @@ void gg_theme_cleanup(void) {
     if (g_theme_provider != NULL) {
         GdkDisplay *display = gdk_display_get_default();
         if (display != NULL) {
-            gtk_style_context_remove_provider_for_display(
-                display,
-                GTK_STYLE_PROVIDER(g_theme_provider)
-            );
+            gtk_style_context_remove_provider_for_display(display, GTK_STYLE_PROVIDER(g_theme_provider));
         }
         g_object_unref(g_theme_provider);
         g_theme_provider = NULL;

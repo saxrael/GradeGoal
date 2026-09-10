@@ -1,13 +1,13 @@
 #include "settings_widget.h"
-#include "gg_grade_row.h"
-#include "gg_confirmation_dialog.h"
-#include "../core/scale_validator.h"
 #include "../core/cgpa_calculator.h"
 #include "../core/course_list.h"
+#include "../core/scale_validator.h"
 #include "../io/backup_manager.h"
+#include "../io/pdf_exporter.h"
 #include "../io/xlsx_exporter.h"
 #include "../io/xlsx_importer.h"
-#include "../io/pdf_exporter.h"
+#include "gg_confirmation_dialog.h"
+#include "gg_grade_row.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -103,19 +103,13 @@ static void on_save_scale_clicked(GtkButton *button, gpointer user_data) {
     gg_cgpa_calculate(after_tcp, tcu, &after_cgpa);
 
     char detail_msg[256];
-    snprintf(detail_msg, sizeof(detail_msg), "Your CGPA will change from %.2f to %.2f if you save this.\nDo you want to proceed?", before_cgpa, after_cgpa);
+    snprintf(detail_msg, sizeof(detail_msg),
+             "Your CGPA will change from %.2f to %.2f if you save this.\nDo you want to proceed?", before_cgpa,
+             after_cgpa);
 
-    gg_confirmation_dialog_show(
-        state->ctx->main_window,
-        "Confirm Grading Scale Edit",
-        "Modifying grading scale points affects all prior courses",
-        detail_msg,
-        "Save and Recalculate",
-        "Cancel",
-        false,
-        on_scale_save_confirmed,
-        state
-    );
+    gg_confirmation_dialog_show(state->ctx->main_window, "Confirm Grading Scale Edit",
+                                "Modifying grading scale points affects all prior courses", detail_msg,
+                                "Save and Recalculate", "Cancel", false, on_scale_save_confirmed, state);
 }
 
 static void on_export_xlsx_finish(GObject *source_object, GAsyncResult *res, gpointer user_data) {
@@ -151,8 +145,8 @@ static void on_export_xlsx_clicked(GtkButton *button, gpointer user_data) {
     struct tm *tm_info = gmtime(&now);
     char default_name[128];
     if (tm_info != NULL) {
-        snprintf(default_name, sizeof(default_name), "GradeGoal_Export_%04d%02d%02d.xlsx",
-                 tm_info->tm_year + 1900, tm_info->tm_mon + 1, tm_info->tm_mday);
+        snprintf(default_name, sizeof(default_name), "GradeGoal_Export_%04d%02d%02d.xlsx", tm_info->tm_year + 1900,
+                 tm_info->tm_mon + 1, tm_info->tm_mday);
     } else {
         snprintf(default_name, sizeof(default_name), "GradeGoal_Export.xlsx");
     }
@@ -203,8 +197,8 @@ static void on_export_pdf_clicked(GtkButton *button, gpointer user_data) {
     struct tm *tm_info = gmtime(&now);
     char default_name[128];
     if (tm_info != NULL) {
-        snprintf(default_name, sizeof(default_name), "GradeGoal_Report_%04d%02d%02d.pdf",
-                 tm_info->tm_year + 1900, tm_info->tm_mon + 1, tm_info->tm_mday);
+        snprintf(default_name, sizeof(default_name), "GradeGoal_Report_%04d%02d%02d.pdf", tm_info->tm_year + 1900,
+                 tm_info->tm_mon + 1, tm_info->tm_mday);
     } else {
         snprintf(default_name, sizeof(default_name), "GradeGoal_Report.pdf");
     }
@@ -272,10 +266,8 @@ static void show_import_summary_modal(GtkWindow *parent, const GGImportSummary *
 
         for (size_t i = 0; i < summary->count; i++) {
             char row_str[256];
-            snprintf(row_str, sizeof(row_str), "Row %zu: Field '%s' value '%s' — %s",
-                     summary->rejections[i].row_number,
-                     summary->rejections[i].field_name,
-                     summary->rejections[i].rejected_value,
+            snprintf(row_str, sizeof(row_str), "Row %zu: Field '%s' value '%s' — %s", summary->rejections[i].row_number,
+                     summary->rejections[i].field_name, summary->rejections[i].rejected_value,
                      summary->rejections[i].reason);
             GtkWidget *rej_lbl = gtk_label_new(row_str);
             gtk_widget_set_halign(rej_lbl, GTK_ALIGN_START);
@@ -366,12 +358,13 @@ void gg_settings_widget_refresh(GtkWidget *widget) {
         if (tm_info != NULL) {
             char buf[128];
             snprintf(buf, sizeof(buf), "Last Automatic Backup: %04d-%02d-%02d %02d:%02d:%02d UTC (Retaining 5 FIFO)",
-                     tm_info->tm_year + 1900, tm_info->tm_mon + 1, tm_info->tm_mday,
-                     tm_info->tm_hour, tm_info->tm_min, tm_info->tm_sec);
+                     tm_info->tm_year + 1900, tm_info->tm_mon + 1, tm_info->tm_mday, tm_info->tm_hour, tm_info->tm_min,
+                     tm_info->tm_sec);
             gtk_label_set_text(GTK_LABEL(state->backup_status_label), buf);
         }
     } else {
-        gtk_label_set_text(GTK_LABEL(state->backup_status_label), "Last Automatic Backup: None recorded yet (Triggered on write)");
+        gtk_label_set_text(GTK_LABEL(state->backup_status_label),
+                           "Last Automatic Backup: None recorded yet (Triggered on write)");
     }
 }
 

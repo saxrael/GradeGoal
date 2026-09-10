@@ -1,7 +1,7 @@
-#include <stdlib.h>
-#include <sqlite3.h>
 #include "sqlite_connection.h"
 #include "sqlite_error.h"
+#include <sqlite3.h>
+#include <stdlib.h>
 
 struct GGDbConnection {
     sqlite3 *db;
@@ -144,25 +144,24 @@ GGStatus gg_db_bootstrap_schema(GGDbConnection *conn) {
     if (conn == NULL || conn->db == NULL) {
         return GG_ERR_INVALID_ARG;
     }
-    const char *ddl =
-        "PRAGMA foreign_keys = ON;\n"
-        "CREATE TABLE IF NOT EXISTS scale (\n"
-        "    grade_symbol TEXT PRIMARY KEY NOT NULL,\n"
-        "    grade_point REAL NOT NULL CHECK(grade_point >= 0.0)\n"
-        ");\n"
-        "CREATE TABLE IF NOT EXISTS course_entries (\n"
-        "    id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-        "    semester_label TEXT NOT NULL,\n"
-        "    course_label TEXT,\n"
-        "    credit_unit INTEGER NOT NULL CHECK(credit_unit > 0),\n"
-        "    grade_symbol TEXT NOT NULL,\n"
-        "    entry_date INTEGER NOT NULL,\n"
-        "    FOREIGN KEY(grade_symbol) REFERENCES scale(grade_symbol)\n"
-        "        ON UPDATE CASCADE\n"
-        "        ON DELETE RESTRICT\n"
-        ");\n"
-        "CREATE INDEX IF NOT EXISTS idx_course_entries_semester ON course_entries(semester_label);\n"
-        "CREATE INDEX IF NOT EXISTS idx_course_entries_grade ON course_entries(grade_symbol);\n";
+    const char *ddl = "PRAGMA foreign_keys = ON;\n"
+                      "CREATE TABLE IF NOT EXISTS scale (\n"
+                      "    grade_symbol TEXT PRIMARY KEY NOT NULL,\n"
+                      "    grade_point REAL NOT NULL CHECK(grade_point >= 0.0)\n"
+                      ");\n"
+                      "CREATE TABLE IF NOT EXISTS course_entries (\n"
+                      "    id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+                      "    semester_label TEXT NOT NULL,\n"
+                      "    course_label TEXT,\n"
+                      "    credit_unit INTEGER NOT NULL CHECK(credit_unit > 0),\n"
+                      "    grade_symbol TEXT NOT NULL,\n"
+                      "    entry_date INTEGER NOT NULL,\n"
+                      "    FOREIGN KEY(grade_symbol) REFERENCES scale(grade_symbol)\n"
+                      "        ON UPDATE CASCADE\n"
+                      "        ON DELETE RESTRICT\n"
+                      ");\n"
+                      "CREATE INDEX IF NOT EXISTS idx_course_entries_semester ON course_entries(semester_label);\n"
+                      "CREATE INDEX IF NOT EXISTS idx_course_entries_grade ON course_entries(grade_symbol);\n";
 
     int rc = sqlite3_exec(conn->db, ddl, NULL, NULL, NULL);
     if (rc != SQLITE_OK) {

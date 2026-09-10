@@ -1,10 +1,10 @@
 #include "pdf_exporter.h"
+#include "../core/cgpa_calculator.h"
+#include "../core/course_list.h"
+#include <hpdf.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <hpdf.h>
-#include "../core/cgpa_calculator.h"
-#include "../core/course_list.h"
 
 static void pdf_error_handler(HPDF_STATUS error_no, HPDF_STATUS detail_no, void *user_data) {
     (void)error_no;
@@ -64,7 +64,8 @@ GGStatus gg_pdf_export(const char *filepath, GGScaleRepository *scale_repo, GGCo
     HPDF_Page_EndText(page);
 
     char summary_text[128];
-    snprintf(summary_text, sizeof(summary_text), "Cumulative CGPA: %.2f  |  Total Points (TCP): %.2f  |  Total Units (TCU): %u", cgpa, tcp, tcu);
+    snprintf(summary_text, sizeof(summary_text),
+             "Cumulative CGPA: %.2f  |  Total Points (TCP): %.2f  |  Total Units (TCU): %u", cgpa, tcp, tcu);
     HPDF_Page_BeginText(page);
     HPDF_Page_SetFontAndSize(page, regular_font, 11);
     HPDF_Page_MoveTextPos(page, 50, 765);

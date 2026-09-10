@@ -1,11 +1,11 @@
-#include "unity.h"
-#include <string.h>
-#include <stdio.h>
-#include <sqlite3.h>
-#include "sqlite_connection.h"
-#include "scale_repository.h"
-#include "course_repository.h"
 #include "../core/course_list.h"
+#include "course_repository.h"
+#include "scale_repository.h"
+#include "sqlite_connection.h"
+#include "unity.h"
+#include <sqlite3.h>
+#include <stdio.h>
+#include <string.h>
 
 static GGDbConnection *db_conn = NULL;
 static GGScaleRepository *scale_repo = NULL;

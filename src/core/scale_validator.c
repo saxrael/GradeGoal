@@ -26,7 +26,8 @@ GGStatus gg_scale_validator_validate_scale(const GGGradingScale *scale) {
 
     for (size_t i = 0; i < scale->count; i++) {
         for (size_t j = i + 1; j < scale->count; j++) {
-            if (strncmp(scale->items[i].grade_symbol, scale->items[j].grade_symbol, sizeof(scale->items[i].grade_symbol)) == 0) {
+            if (strncmp(scale->items[i].grade_symbol, scale->items[j].grade_symbol,
+                        sizeof(scale->items[i].grade_symbol)) == 0) {
                 return GG_ERR_VALIDATION;
             }
         }

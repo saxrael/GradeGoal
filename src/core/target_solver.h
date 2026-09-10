@@ -29,14 +29,8 @@ typedef struct {
     size_t assignment_count;
 } GGSolverResult;
 
-GGStatus gg_target_solver_solve(
-    const GGGradingScale *scale,
-    double current_tcp,
-    uint32_t current_tcu,
-    double target_cgpa,
-    const GGUpcomingCourse *upcoming,
-    size_t upcoming_count,
-    GGSolverResult *out_result
-);
+GGStatus gg_target_solver_solve(const GGGradingScale *scale, double current_tcp, uint32_t current_tcu,
+                                double target_cgpa, const GGUpcomingCourse *upcoming, size_t upcoming_count,
+                                GGSolverResult *out_result);
 
 #endif

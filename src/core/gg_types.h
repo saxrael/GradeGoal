@@ -1,9 +1,9 @@
 #ifndef GG_TYPES_H
 #define GG_TYPES_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <stdbool.h>
 
 typedef enum {
     GG_OK = 0,

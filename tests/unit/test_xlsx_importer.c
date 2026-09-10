@@ -1,12 +1,12 @@
+#include "../../src/io/xlsx_exporter.h"
+#include "../../src/io/xlsx_importer.h"
+#include "../../src/persistence/course_repository.h"
+#include "../../src/persistence/scale_repository.h"
+#include "sqlite_connection.h"
 #include "unity.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "sqlite_connection.h"
-#include "../../src/persistence/scale_repository.h"
-#include "../../src/persistence/course_repository.h"
-#include "../../src/io/xlsx_exporter.h"
-#include "../../src/io/xlsx_importer.h"
 
 static GGDbConnection *db_conn = NULL;
 static GGScaleRepository *scale_repo = NULL;

@@ -1,15 +1,13 @@
-#include "unity.h"
-#include "target_solver.h"
 #include "cgpa_calculator.h"
 #include "scale_validator.h"
-#include <string.h>
+#include "target_solver.h"
+#include "unity.h"
 #include <stdint.h>
+#include <string.h>
 
-void setUp(void) {
-}
+void setUp(void) {}
 
-void tearDown(void) {
-}
+void tearDown(void) {}
 
 static GGGradingScale create_scale_5_point(void) {
     GGGradingScale scale;
@@ -134,10 +132,7 @@ static void test_adversarial_non_standard_symbols_16_tiers(void) {
     scale.max_point = 15.0;
     scale.min_point = 0.0;
 
-    const char *labels[16] = {
-        "A+", "A", "A-", "B+", "B", "B-", "C+", "C",
-        "C-", "D+", "D", "D-", "E+", "E", "E-", "F"
-    };
+    const char *labels[16] = {"A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "E+", "E", "E-", "F"};
 
     for (size_t i = 0; i < 16; i++) {
         strncpy(scale.items[i].grade_symbol, labels[i], sizeof(scale.items[i].grade_symbol) - 1);
@@ -354,7 +349,8 @@ static void test_adversarial_cgpa_large_values_no_overflow(void) {
 
     double combined_tcp = 0.0;
     uint32_t combined_tcu = 0;
-    status = gg_cgpa_combine_standing(1800000000.0, 500000000, 1900000000.0, 500000000, &out_cgpa, &combined_tcp, &combined_tcu);
+    status = gg_cgpa_combine_standing(1800000000.0, 500000000, 1900000000.0, 500000000, &out_cgpa, &combined_tcp,
+                                      &combined_tcu);
     TEST_ASSERT_EQUAL(GG_OK, status);
     TEST_ASSERT_DOUBLE_WITHIN(1e-9, 3700000000.0, combined_tcp);
     TEST_ASSERT_EQUAL_UINT32(1000000000, combined_tcu);
@@ -481,12 +477,8 @@ static void test_adversarial_solver_string_max_symbol_and_label_bounds(void) {
     scale.max_point = 15.0;
     scale.min_point = 0.0;
 
-    const char *symbols[16] = {
-        "GRADE01", "GRADE02", "GRADE03", "GRADE04",
-        "GRADE05", "GRADE06", "GRADE07", "GRADE08",
-        "GRADE09", "GRADE10", "GRADE11", "GRADE12",
-        "GRADE13", "GRADE14", "GRADE15", "GRADE16"
-    };
+    const char *symbols[16] = {"GRADE01", "GRADE02", "GRADE03", "GRADE04", "GRADE05", "GRADE06", "GRADE07", "GRADE08",
+                               "GRADE09", "GRADE10", "GRADE11", "GRADE12", "GRADE13", "GRADE14", "GRADE15", "GRADE16"};
 
     for (size_t i = 0; i < 16; i++) {
         strncpy(scale.items[i].grade_symbol, symbols[i], sizeof(scale.items[i].grade_symbol) - 1);

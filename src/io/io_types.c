@@ -1,7 +1,7 @@
 #include "io_types.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 GGStatus gg_import_summary_create(GGImportSummary **out_summary) {
     if (out_summary == NULL) {
@@ -21,14 +21,16 @@ GGStatus gg_import_summary_create(GGImportSummary **out_summary) {
     return GG_OK;
 }
 
-GGStatus gg_import_summary_add_rejection(GGImportSummary *summary, size_t row, const char *field, const char *val, const char *reason) {
+GGStatus gg_import_summary_add_rejection(GGImportSummary *summary, size_t row, const char *field, const char *val,
+                                         const char *reason) {
     if (summary == NULL || field == NULL || reason == NULL) {
         return GG_ERR_INVALID_ARG;
     }
 
     if (summary->count >= summary->capacity) {
         size_t new_cap = summary->capacity * 2;
-        GGImportRejection *new_arr = (GGImportRejection *)realloc(summary->rejections, new_cap * sizeof(GGImportRejection));
+        GGImportRejection *new_arr =
+            (GGImportRejection *)realloc(summary->rejections, new_cap * sizeof(GGImportRejection));
         if (new_arr == NULL) {
             return GG_ERR_NOMEM;
         }

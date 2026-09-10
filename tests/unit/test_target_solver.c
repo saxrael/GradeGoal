@@ -1,12 +1,10 @@
-#include "unity.h"
 #include "target_solver.h"
+#include "unity.h"
 #include <string.h>
 
-void setUp(void) {
-}
+void setUp(void) {}
 
-void tearDown(void) {
-}
+void tearDown(void) {}
 
 static GGGradingScale create_standard_scale(void) {
     GGGradingScale scale;

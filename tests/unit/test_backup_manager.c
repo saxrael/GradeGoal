@@ -1,13 +1,13 @@
+#include "../../src/io/backup_manager.h"
 #include "unity.h"
+#include <sqlite3.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sqlite3.h>
-#include "../../src/io/backup_manager.h"
 
 #if defined(_WIN32)
-#include <windows.h>
 #include <direct.h>
+#include <windows.h>
 #define test_mkdir(p) _mkdir(p)
 #else
 #include <sys/stat.h>

@@ -1,16 +1,11 @@
 #include "gg_course_entry_row.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-GGCourseEntryRow *gg_course_entry_row_create(
-    const GGGradingScale *scale,
-    const GGCourseEntry *initial_entry,
-    bool show_grade_combo,
-    GCallback on_changed,
-    GCallback on_remove,
-    gpointer user_data
-) {
+GGCourseEntryRow *gg_course_entry_row_create(const GGGradingScale *scale, const GGCourseEntry *initial_entry,
+                                             bool show_grade_combo, GCallback on_changed, GCallback on_remove,
+                                             gpointer user_data) {
     GGCourseEntryRow *row = (GGCourseEntryRow *)calloc(1, sizeof(GGCourseEntryRow));
     if (row == NULL) {
         return NULL;

@@ -1,9 +1,9 @@
 #include "main_window.h"
 #include "dashboard_widget.h"
-#include "history_widget.h"
-#include "target_calculator_widget.h"
-#include "settings_widget.h"
 #include "first_run_wizard.h"
+#include "history_widget.h"
+#include "settings_widget.h"
+#include "target_calculator_widget.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -97,9 +97,11 @@ GtkWidget *gg_main_window_create(GGAppContext *ctx) {
 
     GGGradingScale scale;
     memset(&scale, 0, sizeof(scale));
-    GGStatus st = ctx->scale_repo != NULL ? ctx->scale_repo->load_scale(ctx->scale_repo->context, &scale) : GG_ERR_NOT_FOUND;
+    GGStatus st =
+        ctx->scale_repo != NULL ? ctx->scale_repo->load_scale(ctx->scale_repo->context, &scale) : GG_ERR_NOT_FOUND;
     if (st != GG_OK || scale.count == 0) {
-        GtkWidget *wizard = gg_first_run_wizard_create(GTK_WINDOW(state->window), ctx, G_CALLBACK(on_wizard_completed), state);
+        GtkWidget *wizard =
+            gg_first_run_wizard_create(GTK_WINDOW(state->window), ctx, G_CALLBACK(on_wizard_completed), state);
         if (wizard != NULL) {
             gtk_window_present(GTK_WINDOW(wizard));
         }

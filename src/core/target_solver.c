@@ -23,15 +23,9 @@ typedef struct {
     size_t grade_index;
 } GGSolverWorkingItem;
 
-GGStatus gg_target_solver_solve(
-    const GGGradingScale *scale,
-    double current_tcp,
-    uint32_t current_tcu,
-    double target_cgpa,
-    const GGUpcomingCourse *upcoming,
-    size_t upcoming_count,
-    GGSolverResult *out_result
-) {
+GGStatus gg_target_solver_solve(const GGGradingScale *scale, double current_tcp, uint32_t current_tcu,
+                                double target_cgpa, const GGUpcomingCourse *upcoming, size_t upcoming_count,
+                                GGSolverResult *out_result) {
     if (scale == NULL || out_result == NULL) {
         return GG_ERR_INVALID_ARG;
     }
@@ -92,8 +86,10 @@ GGStatus gg_target_solver_solve(
         out_result->assignment_count = upcoming_count;
         for (size_t i = 0; i < upcoming_count; i++) {
             out_result->assignments[i].credit_unit = upcoming[i].credit_unit;
-            gg_copy_string(out_result->assignments[i].course_label, sizeof(out_result->assignments[i].course_label), upcoming[i].course_label);
-            gg_copy_string(out_result->assignments[i].assigned_grade, sizeof(out_result->assignments[i].assigned_grade), scale->items[scale->count - 1].grade_symbol);
+            gg_copy_string(out_result->assignments[i].course_label, sizeof(out_result->assignments[i].course_label),
+                           upcoming[i].course_label);
+            gg_copy_string(out_result->assignments[i].assigned_grade, sizeof(out_result->assignments[i].assigned_grade),
+                           scale->items[scale->count - 1].grade_symbol);
             out_result->assignments[i].grade_point = scale->min_point;
         }
         return GG_OK;
@@ -136,7 +132,8 @@ GGStatus gg_target_solver_solve(
         }
 
         size_t cur_k = working[target_idx].grade_index;
-        double gain = (double)working[target_idx].credit_unit * (scale->items[cur_k - 1].grade_point - scale->items[cur_k].grade_point);
+        double gain = (double)working[target_idx].credit_unit *
+                      (scale->items[cur_k - 1].grade_point - scale->items[cur_k].grade_point);
         working[target_idx].grade_index = cur_k - 1;
         current_points += gain;
     }
@@ -144,8 +141,10 @@ GGStatus gg_target_solver_solve(
     for (size_t i = 0; i < upcoming_count; i++) {
         size_t k = working[i].grade_index;
         out_result->assignments[i].credit_unit = working[i].credit_unit;
-        gg_copy_string(out_result->assignments[i].course_label, sizeof(out_result->assignments[i].course_label), working[i].course_label);
-        gg_copy_string(out_result->assignments[i].assigned_grade, sizeof(out_result->assignments[i].assigned_grade), scale->items[k].grade_symbol);
+        gg_copy_string(out_result->assignments[i].course_label, sizeof(out_result->assignments[i].course_label),
+                       working[i].course_label);
+        gg_copy_string(out_result->assignments[i].assigned_grade, sizeof(out_result->assignments[i].assigned_grade),
+                       scale->items[k].grade_symbol);
         out_result->assignments[i].grade_point = scale->items[k].grade_point;
     }
 

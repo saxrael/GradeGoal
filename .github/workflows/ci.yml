@@ -15,7 +15,7 @@ jobs:
       - name: Install Clang-Format
         run: sudo apt-get update && sudo apt-get install -y clang-format
       - name: Check Formatting
-        run: find src tests -name '*.c' -o -name '*.h' | xargs clang-format --dry-run --Werror
+        run: find src tests \( -name '*.c' -o -name '*.h' \) | xargs clang-format --dry-run --Werror
       - name: Check Zero Comments
         run: bash tools/check_zero_comments.sh
 

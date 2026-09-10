@@ -1,13 +1,13 @@
+#include "../core/course_list.h"
+#include "course_repository.h"
+#include "scale_repository.h"
+#include "sqlite_connection.h"
 #include "unity.h"
-#include <string.h>
+#include <sqlite3.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <sqlite3.h>
-#include "sqlite_connection.h"
-#include "scale_repository.h"
-#include "course_repository.h"
-#include "../core/course_list.h"
+#include <string.h>
 
 static GGDbConnection *db_conn = NULL;
 static GGScaleRepository *scale_repo = NULL;
@@ -90,13 +90,8 @@ static void test_massive_mutations_1200_courses_live_drift(void) {
     TrackedCourse *tracked = (TrackedCourse *)calloc(total_courses, sizeof(TrackedCourse));
     TEST_ASSERT_NOT_NULL(tracked);
 
-    const char *semesters[] = {
-        "Year 1 Fall", "Year 1 Spring",
-        "Year 2 Fall", "Year 2 Spring",
-        "Year 3 Fall", "Year 3 Spring",
-        "Year 4 Fall", "Year 4 Spring",
-        "Year 5 Fall", "Year 5 Spring"
-    };
+    const char *semesters[] = {"Year 1 Fall",   "Year 1 Spring", "Year 2 Fall",   "Year 2 Spring", "Year 3 Fall",
+                               "Year 3 Spring", "Year 4 Fall",   "Year 4 Spring", "Year 5 Fall",   "Year 5 Spring"};
 
     uint32_t rng = 424242;
     double expected_tcp = 0.0;
@@ -288,7 +283,8 @@ static void test_fk_delete_restrict_with_150_courses(void) {
     scale_without_a.max_point = 4.0;
     scale_without_a.min_point = 0.0;
     for (size_t i = 0; i < 5; i++) {
-        snprintf(scale_without_a.items[i].grade_symbol, sizeof(scale_without_a.items[i].grade_symbol), "%s", scale.items[i + 1].grade_symbol);
+        snprintf(scale_without_a.items[i].grade_symbol, sizeof(scale_without_a.items[i].grade_symbol), "%s",
+                 scale.items[i + 1].grade_symbol);
         scale_without_a.items[i].grade_point = scale.items[i + 1].grade_point;
     }
 
@@ -449,10 +445,16 @@ static void test_boundary_credit_unit_zero_and_negative(void) {
 
     sqlite3 *db = gg_db_get_handle(db_conn);
     TEST_ASSERT_NOT_NULL(db);
-    int rc = sqlite3_exec(db, "INSERT INTO course_entries (semester_label, credit_unit, grade_symbol, entry_date) VALUES ('Y1', 0, 'A', 100);", NULL, NULL, NULL);
+    int rc = sqlite3_exec(db,
+                          "INSERT INTO course_entries (semester_label, credit_unit, grade_symbol, entry_date) VALUES "
+                          "('Y1', 0, 'A', 100);",
+                          NULL, NULL, NULL);
     TEST_ASSERT_EQUAL(SQLITE_CONSTRAINT, rc & 0xFF);
 
-    rc = sqlite3_exec(db, "INSERT INTO course_entries (semester_label, credit_unit, grade_symbol, entry_date) VALUES ('Y1', -5, 'A', 100);", NULL, NULL, NULL);
+    rc = sqlite3_exec(db,
+                      "INSERT INTO course_entries (semester_label, credit_unit, grade_symbol, entry_date) VALUES "
+                      "('Y1', -5, 'A', 100);",
+                      NULL, NULL, NULL);
     TEST_ASSERT_EQUAL(SQLITE_CONSTRAINT, rc & 0xFF);
 }
 

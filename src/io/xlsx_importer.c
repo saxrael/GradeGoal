@@ -1,17 +1,12 @@
 #include "xlsx_importer.h"
+#include "../core/scale_validator.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include <xlsxio_read.h>
-#include "../core/scale_validator.h"
 
-GGStatus gg_xlsx_import(
-    const char *filepath,
-    GGScaleRepository *scale_repo,
-    GGCourseRepository *course_repo,
-    bool dry_run,
-    GGImportSummary *summary
-) {
+GGStatus gg_xlsx_import(const char *filepath, GGScaleRepository *scale_repo, GGCourseRepository *course_repo,
+                        bool dry_run, GGImportSummary *summary) {
     if (filepath == NULL || scale_repo == NULL || course_repo == NULL || summary == NULL) {
         return GG_ERR_INVALID_ARG;
     }
@@ -61,8 +56,7 @@ GGStatus gg_xlsx_import(
         if (xlsxioread_sheet_next_cell_string(scale_sheet, &val)) {
             if (val != NULL) {
                 snprintf(temp_scale.items[temp_scale.count].grade_symbol,
-                         sizeof(temp_scale.items[temp_scale.count].grade_symbol),
-                         "%s", val);
+                         sizeof(temp_scale.items[temp_scale.count].grade_symbol), "%s", val);
                 free(val);
                 val = NULL;
             }
@@ -165,7 +159,8 @@ GGStatus gg_xlsx_import(
 
         GGStatus row_status = ggvalidate_course_entry(&temp_scale, &entry);
         if (row_status != GG_OK) {
-            gg_import_summary_add_rejection(summary, row_number, "entry", entry.course_label, "Course entry failed validation");
+            gg_import_summary_add_rejection(summary, row_number, "entry", entry.course_label,
+                                            "Course entry failed validation");
             continue;
         }
 
@@ -173,7 +168,8 @@ GGStatus gg_xlsx_import(
             int64_t out_id = 0;
             status = course_repo->insert_course(course_repo->context, &entry, &out_id);
             if (status != GG_OK) {
-                gg_import_summary_add_rejection(summary, row_number, "database", entry.course_label, "Failed to insert into database");
+                gg_import_summary_add_rejection(summary, row_number, "database", entry.course_label,
+                                                "Failed to insert into database");
                 continue;
             }
         }

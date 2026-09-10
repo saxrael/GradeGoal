@@ -1,8 +1,8 @@
 #ifndef GG_SQLITE_CONNECTION_H
 #define GG_SQLITE_CONNECTION_H
 
-#include <stdbool.h>
 #include "gg_types.h"
+#include <stdbool.h>
 
 typedef struct sqlite3 sqlite3;
 typedef struct GGDbConnection GGDbConnection;

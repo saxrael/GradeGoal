@@ -1,6 +1,6 @@
 #include "target_calculator_widget.h"
-#include "gg_course_entry_row.h"
 #include "../core/target_solver.h"
+#include "gg_course_entry_row.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,7 +23,8 @@ static void on_remove_upcoming_row(gpointer data) {
     if (target_row == NULL || target_row->container == NULL) {
         return;
     }
-    GGTargetCalculatorState *state = (GGTargetCalculatorState *)g_object_get_data(G_OBJECT(target_row->container), "calculator_state");
+    GGTargetCalculatorState *state =
+        (GGTargetCalculatorState *)g_object_get_data(G_OBJECT(target_row->container), "calculator_state");
     if (state == NULL || state->row_count <= 1) {
         return;
     }
@@ -56,7 +57,8 @@ static void on_add_upcoming_clicked(GtkButton *button, gpointer user_data) {
     memset(&initial, 0, sizeof(initial));
     initial.credit_unit = 3;
 
-    GGCourseEntryRow *row = gg_course_entry_row_create(NULL, &initial, false, NULL, G_CALLBACK(on_remove_upcoming_row), state);
+    GGCourseEntryRow *row =
+        gg_course_entry_row_create(NULL, &initial, false, NULL, G_CALLBACK(on_remove_upcoming_row), state);
     if (row != NULL) {
         g_object_set_data(G_OBJECT(row->container), "calculator_state", state);
         state->rows[state->row_count] = row;
@@ -100,7 +102,8 @@ static void on_calculate_clicked(GtkButton *button, gpointer user_data) {
         memset(&entry, 0, sizeof(entry));
         gg_course_entry_row_get_entry(state->rows[i], &entry);
         if (entry.credit_unit > 0) {
-            snprintf(upcoming[valid_upcoming_count].course_label, sizeof(upcoming[valid_upcoming_count].course_label), "%s", entry.course_label);
+            snprintf(upcoming[valid_upcoming_count].course_label, sizeof(upcoming[valid_upcoming_count].course_label),
+                     "%s", entry.course_label);
             upcoming[valid_upcoming_count].credit_unit = entry.credit_unit;
             valid_upcoming_count++;
         }
@@ -132,21 +135,25 @@ static void on_calculate_clicked(GtkButton *button, gpointer user_data) {
         gtk_widget_add_css_class(state->result_card, "accent-warning");
         gtk_label_set_text(GTK_LABEL(state->result_title_label), "Target Not Reachable");
         char detail[128];
-        snprintf(detail, sizeof(detail), "The target CGPA of %.2f cannot be reached with the entered courses.\nMaximum achievable CGPA: %.2f", target_cgpa, result.max_achievable_cgpa);
+        snprintf(detail, sizeof(detail),
+                 "The target CGPA of %.2f cannot be reached with the entered courses.\nMaximum achievable CGPA: %.2f",
+                 target_cgpa, result.max_achievable_cgpa);
         gtk_label_set_text(GTK_LABEL(state->result_detail_label), detail);
     } else if (result.branch == GG_SOLVER_ALREADY_GUARANTEED) {
         gtk_widget_add_css_class(state->result_card, "accent-success");
         gtk_label_set_text(GTK_LABEL(state->result_title_label), "Target Already Guaranteed");
         char detail[128];
-        snprintf(detail, sizeof(detail), "Your target CGPA of %.2f is already assured regardless of upcoming grades!\nFloor outcome (all lowest grades) shown below.", target_cgpa);
+        snprintf(detail, sizeof(detail),
+                 "Your target CGPA of %.2f is already assured regardless of upcoming grades!\nFloor outcome (all "
+                 "lowest grades) shown below.",
+                 target_cgpa);
         gtk_label_set_text(GTK_LABEL(state->result_detail_label), detail);
 
         for (size_t i = 0; i < result.assignment_count; i++) {
             char row_str[128];
             snprintf(row_str, sizeof(row_str), "• %s (%u units)  —  Assigned Grade: %s (%.1f)",
                      result.assignments[i].course_label[0] != '\0' ? result.assignments[i].course_label : "Course",
-                     result.assignments[i].credit_unit,
-                     result.assignments[i].assigned_grade,
+                     result.assignments[i].credit_unit, result.assignments[i].assigned_grade,
                      result.assignments[i].grade_point);
             GtkWidget *lbl = gtk_label_new(row_str);
             gtk_widget_set_halign(lbl, GTK_ALIGN_START);
@@ -156,15 +163,16 @@ static void on_calculate_clicked(GtkButton *button, gpointer user_data) {
         gtk_widget_add_css_class(state->result_card, "accent-info");
         gtk_label_set_text(GTK_LABEL(state->result_title_label), "Target Reachable with Effort");
         char detail[128];
-        snprintf(detail, sizeof(detail), "Minimum required average grade point: %.2f\nRequired grade distribution across upcoming courses:", result.min_required_average);
+        snprintf(detail, sizeof(detail),
+                 "Minimum required average grade point: %.2f\nRequired grade distribution across upcoming courses:",
+                 result.min_required_average);
         gtk_label_set_text(GTK_LABEL(state->result_detail_label), detail);
 
         for (size_t i = 0; i < result.assignment_count; i++) {
             char row_str[128];
             snprintf(row_str, sizeof(row_str), "• %s (%u units)  —  Needed Grade: %s (%.1f)",
                      result.assignments[i].course_label[0] != '\0' ? result.assignments[i].course_label : "Course",
-                     result.assignments[i].credit_unit,
-                     result.assignments[i].assigned_grade,
+                     result.assignments[i].credit_unit, result.assignments[i].assigned_grade,
                      result.assignments[i].grade_point);
             GtkWidget *lbl = gtk_label_new(row_str);
             gtk_widget_set_halign(lbl, GTK_ALIGN_START);
@@ -233,7 +241,8 @@ GtkWidget *gg_target_calculator_widget_create(GGAppContext *ctx) {
         GGCourseEntry initial;
         memset(&initial, 0, sizeof(initial));
         initial.credit_unit = 3;
-        state->rows[state->row_count] = gg_course_entry_row_create(NULL, &initial, false, NULL, G_CALLBACK(on_remove_upcoming_row), state);
+        state->rows[state->row_count] =
+            gg_course_entry_row_create(NULL, &initial, false, NULL, G_CALLBACK(on_remove_upcoming_row), state);
         g_object_set_data(G_OBJECT(state->rows[state->row_count]->container), "calculator_state", state);
         gtk_box_append(GTK_BOX(state->courses_box), state->rows[state->row_count]->container);
         state->row_count++;

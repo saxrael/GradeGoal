@@ -1,11 +1,11 @@
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <time.h>
-#include <sqlite3.h>
 #include "course_repository.h"
 #include "../core/course_list.h"
 #include "sqlite_error.h"
+#include <sqlite3.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
 typedef struct {
     GGDbConnection *conn;
@@ -109,10 +109,9 @@ static GGStatus sqlite_course_update(void *context, const GGCourseEntry *entry) 
     }
 
     sqlite3_stmt *stmt = NULL;
-    const char *sql =
-        "UPDATE course_entries\n"
-        "SET semester_label = ?, course_label = ?, credit_unit = ?, grade_symbol = ?, entry_date = ?\n"
-        "WHERE id = ?;";
+    const char *sql = "UPDATE course_entries\n"
+                      "SET semester_label = ?, course_label = ?, credit_unit = ?, grade_symbol = ?, entry_date = ?\n"
+                      "WHERE id = ?;";
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
     if (rc != SQLITE_OK) {
         return gg_status_from_sqlite(rc);
@@ -224,9 +223,8 @@ static GGStatus sqlite_course_get_by_id(void *context, int64_t id, GGCourseEntry
     }
 
     sqlite3_stmt *stmt = NULL;
-    const char *sql =
-        "SELECT id, semester_label, course_label, credit_unit, grade_symbol, entry_date\n"
-        "FROM course_entries WHERE id = ?;";
+    const char *sql = "SELECT id, semester_label, course_label, credit_unit, grade_symbol, entry_date\n"
+                      "FROM course_entries WHERE id = ?;";
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
     if (rc != SQLITE_OK) {
         return gg_status_from_sqlite(rc);
@@ -295,10 +293,9 @@ static GGStatus sqlite_course_list_all(void *context, GGCourseList **out_list) {
     }
 
     sqlite3_stmt *stmt = NULL;
-    const char *sql =
-        "SELECT id, semester_label, course_label, credit_unit, grade_symbol, entry_date\n"
-        "FROM course_entries\n"
-        "ORDER BY entry_date ASC, id ASC;";
+    const char *sql = "SELECT id, semester_label, course_label, credit_unit, grade_symbol, entry_date\n"
+                      "FROM course_entries\n"
+                      "ORDER BY entry_date ASC, id ASC;";
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
     if (rc != SQLITE_OK) {
         gg_course_list_destroy(*out_list);
@@ -370,11 +367,10 @@ static GGStatus sqlite_course_list_by_semester(void *context, const char *semest
     }
 
     sqlite3_stmt *stmt = NULL;
-    const char *sql =
-        "SELECT id, semester_label, course_label, credit_unit, grade_symbol, entry_date\n"
-        "FROM course_entries\n"
-        "WHERE semester_label = ?\n"
-        "ORDER BY entry_date ASC, id ASC;";
+    const char *sql = "SELECT id, semester_label, course_label, credit_unit, grade_symbol, entry_date\n"
+                      "FROM course_entries\n"
+                      "WHERE semester_label = ?\n"
+                      "ORDER BY entry_date ASC, id ASC;";
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
     if (rc != SQLITE_OK) {
         gg_course_list_destroy(*out_list);
@@ -450,11 +446,10 @@ static GGStatus sqlite_course_get_live_totals(void *context, double *out_tcp, ui
     }
 
     sqlite3_stmt *stmt = NULL;
-    const char *sql =
-        "SELECT COALESCE(SUM(ce.credit_unit * s.grade_point), 0.0),\n"
-        "       COALESCE(SUM(ce.credit_unit), 0)\n"
-        "FROM course_entries ce\n"
-        "JOIN scale s ON ce.grade_symbol = s.grade_symbol;";
+    const char *sql = "SELECT COALESCE(SUM(ce.credit_unit * s.grade_point), 0.0),\n"
+                      "       COALESCE(SUM(ce.credit_unit), 0)\n"
+                      "FROM course_entries ce\n"
+                      "JOIN scale s ON ce.grade_symbol = s.grade_symbol;";
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
     if (rc != SQLITE_OK) {
         return gg_status_from_sqlite(rc);

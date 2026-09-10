@@ -1,9 +1,9 @@
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <sqlite3.h>
 #include "scale_repository.h"
 #include "sqlite_error.h"
+#include <sqlite3.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 typedef struct {
     GGDbConnection *conn;
@@ -38,9 +38,8 @@ static GGStatus sqlite_scale_save(void *context, const GGGradingScale *scale) {
     }
 
     sqlite3_stmt *upsert_stmt = NULL;
-    const char *upsert_sql =
-        "INSERT INTO scale (grade_symbol, grade_point) VALUES (?, ?)\n"
-        "ON CONFLICT(grade_symbol) DO UPDATE SET grade_point = excluded.grade_point;";
+    const char *upsert_sql = "INSERT INTO scale (grade_symbol, grade_point) VALUES (?, ?)\n"
+                             "ON CONFLICT(grade_symbol) DO UPDATE SET grade_point = excluded.grade_point;";
     int rc = sqlite3_prepare_v2(db, upsert_sql, -1, &upsert_stmt, NULL);
     if (rc != SQLITE_OK) {
         status = gg_status_from_sqlite(rc);
@@ -137,7 +136,8 @@ static GGStatus sqlite_scale_load(void *context, GGGradingScale *out_scale) {
     memset(out_scale, 0, sizeof(*out_scale));
 
     sqlite3_stmt *stmt = NULL;
-    int rc = sqlite3_prepare_v2(db, "SELECT grade_symbol, grade_point FROM scale ORDER BY grade_point DESC;", -1, &stmt, NULL);
+    int rc = sqlite3_prepare_v2(db, "SELECT grade_symbol, grade_point FROM scale ORDER BY grade_point DESC;", -1, &stmt,
+                                NULL);
     if (rc != SQLITE_OK) {
         return gg_status_from_sqlite(rc);
     }
@@ -153,7 +153,8 @@ static GGStatus sqlite_scale_load(void *context, GGGradingScale *out_scale) {
             sqlite3_finalize(stmt);
             return GG_ERR_DB;
         }
-        snprintf(out_scale->items[idx].grade_symbol, sizeof(out_scale->items[idx].grade_symbol), "%s", (const char *)sym);
+        snprintf(out_scale->items[idx].grade_symbol, sizeof(out_scale->items[idx].grade_symbol), "%s",
+                 (const char *)sym);
         out_scale->items[idx].grade_point = sqlite3_column_double(stmt, 1);
         idx++;
     }

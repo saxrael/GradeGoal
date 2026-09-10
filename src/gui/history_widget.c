@@ -1,7 +1,7 @@
 #include "history_widget.h"
-#include "gg_confirmation_dialog.h"
 #include "../core/course_list.h"
 #include "../io/backup_manager.h"
+#include "gg_confirmation_dialog.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,7 +40,8 @@ typedef struct {
 
 static void on_delete_confirmed(bool confirmed, gpointer user_data) {
     GGDeleteCourseContext *ctx = (GGDeleteCourseContext *)user_data;
-    if (confirmed && ctx != NULL && ctx->state != NULL && ctx->state->ctx != NULL && ctx->state->ctx->course_repo != NULL) {
+    if (confirmed && ctx != NULL && ctx->state != NULL && ctx->state->ctx != NULL &&
+        ctx->state->ctx->course_repo != NULL) {
         ctx->state->ctx->course_repo->delete_course(ctx->state->ctx->course_repo->context, ctx->course_id);
         gg_backup_create_snapshot(ctx->state->ctx->db_filepath, ctx->state->ctx->backup_dir);
         gg_history_widget_refresh(ctx->state->container);
@@ -55,17 +56,9 @@ static void on_delete_course_clicked(GtkButton *button, gpointer user_data) {
         return;
     }
     GtkWindow *win = ctx->state->ctx != NULL ? ctx->state->ctx->main_window : NULL;
-    gg_confirmation_dialog_show(
-        win,
-        "Delete Course Entry",
-        "Delete this course entry?",
-        "This action cannot be undone and will immediately update your CGPA.",
-        "Delete",
-        "Cancel",
-        true,
-        on_delete_confirmed,
-        ctx
-    );
+    gg_confirmation_dialog_show(win, "Delete Course Entry", "Delete this course entry?",
+                                "This action cannot be undone and will immediately update your CGPA.", "Delete",
+                                "Cancel", true, on_delete_confirmed, ctx);
 }
 
 static void on_edit_course_submit(GtkButton *button, gpointer user_data) {
@@ -121,7 +114,8 @@ static void on_edit_course_clicked(GtkButton *button, gpointer user_data) {
 
     GGCourseEntry entry;
     memset(&entry, 0, sizeof(entry));
-    GGStatus st = ctx->state->ctx->course_repo->get_course_by_id(ctx->state->ctx->course_repo->context, ctx->course_id, &entry);
+    GGStatus st =
+        ctx->state->ctx->course_repo->get_course_by_id(ctx->state->ctx->course_repo->context, ctx->course_id, &entry);
     if (st != GG_OK) {
         return;
     }
@@ -324,7 +318,8 @@ void gg_history_widget_refresh(GtkWidget *widget) {
                 }
             }
             if (!found && seen_count < 64) {
-                snprintf(seen_semesters[seen_count], sizeof(seen_semesters[seen_count]), "%s", all_courses->entries[i].semester_label);
+                snprintf(seen_semesters[seen_count], sizeof(seen_semesters[seen_count]), "%s",
+                         all_courses->entries[i].semester_label);
                 seen_count++;
             }
         }
@@ -366,7 +361,8 @@ void gg_history_widget_refresh(GtkWidget *widget) {
 
     GGCourseList *list = NULL;
     if (state->current_filter_semester[0] != '\0') {
-        state->ctx->course_repo->list_courses_by_semester(state->ctx->course_repo->context, state->current_filter_semester, &list);
+        state->ctx->course_repo->list_courses_by_semester(state->ctx->course_repo->context,
+                                                          state->current_filter_semester, &list);
     } else {
         state->ctx->course_repo->list_all_courses(state->ctx->course_repo->context, &list);
     }
@@ -384,7 +380,8 @@ void gg_history_widget_refresh(GtkWidget *widget) {
             gtk_widget_set_size_request(lbl_sem, 140, -1);
             gtk_widget_set_halign(lbl_sem, GTK_ALIGN_START);
 
-            GtkWidget *lbl_code = gtk_label_new(list->entries[i].course_label[0] != '\0' ? list->entries[i].course_label : "—");
+            GtkWidget *lbl_code =
+                gtk_label_new(list->entries[i].course_label[0] != '\0' ? list->entries[i].course_label : "—");
             gtk_widget_set_hexpand(lbl_code, TRUE);
             gtk_widget_set_halign(lbl_code, GTK_ALIGN_START);
 
@@ -457,7 +454,7 @@ GtkWidget *gg_history_widget_create(GGAppContext *ctx) {
     GtkWidget *filter_label = gtk_label_new("Filter by Semester:");
     gtk_widget_set_halign(filter_label, GTK_ALIGN_START);
 
-    const char *initial_filters[] = { "All Semesters", NULL };
+    const char *initial_filters[] = {"All Semesters", NULL};
     GtkStringList *init_slist = gtk_string_list_new(initial_filters);
     state->filter_dropdown = gtk_drop_down_new(G_LIST_MODEL(init_slist), NULL);
     gtk_widget_set_size_request(state->filter_dropdown, 200, -1);
@@ -487,7 +484,7 @@ GtkWidget *gg_history_widget_create(GGAppContext *ctx) {
     gtk_entry_set_placeholder_text(GTK_ENTRY(state->unit_entry), "Units (1-10)");
     gtk_widget_set_size_request(state->unit_entry, 90, -1);
 
-    const char *initial_grades[] = { "A", "B", "C", "D", "E", "F", NULL };
+    const char *initial_grades[] = {"A", "B", "C", "D", "E", "F", NULL};
     GtkStringList *init_grades = gtk_string_list_new(initial_grades);
     state->grade_dropdown = gtk_drop_down_new(G_LIST_MODEL(init_grades), NULL);
     gtk_widget_set_size_request(state->grade_dropdown, 110, -1);
@@ -510,7 +507,8 @@ GtkWidget *gg_history_widget_create(GGAppContext *ctx) {
     state->table_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
     gtk_box_append(GTK_BOX(scroll_content), state->table_box);
 
-    state->empty_label = gtk_label_new("No course history records found.\nAdd courses above or import an existing backup.");
+    state->empty_label =
+        gtk_label_new("No course history records found.\nAdd courses above or import an existing backup.");
     gtk_widget_add_css_class(state->empty_label, "dim-label");
     gtk_widget_set_margin_top(state->empty_label, 40);
     gtk_box_append(GTK_BOX(scroll_content), state->empty_label);

@@ -1,9 +1,9 @@
 #include "first_run_wizard.h"
-#include "gg_grade_row.h"
 #include "../core/scale_validator.h"
+#include "gg_grade_row.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include <time.h>
 
 typedef struct {
@@ -69,7 +69,8 @@ static void on_wizard_add_grade_clicked(GtkButton *button, gpointer user_data) {
     memset(&itm, 0, sizeof(itm));
     itm.grade_symbol[0] = '\0';
     itm.grade_point = 0.0;
-    GGGradeRow *new_row = gg_grade_row_create(&itm, G_CALLBACK(on_wizard_grade_changed), G_CALLBACK(on_wizard_grade_removed), state);
+    GGGradeRow *new_row =
+        gg_grade_row_create(&itm, G_CALLBACK(on_wizard_grade_changed), G_CALLBACK(on_wizard_grade_removed), state);
     if (new_row != NULL) {
         g_object_set_data(G_OBJECT(new_row->container), "wizard_state", state);
         state->rows[state->row_count] = new_row;
@@ -265,13 +266,14 @@ GtkWidget *gg_first_run_wizard_create(GtkWindow *parent, GGAppContext *ctx, GCal
     gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scroll), state->grade_box);
     gtk_box_append(GTK_BOX(page_scale), scroll);
 
-    const char *default_symbols[] = { "A", "B", "C", "D", "E", "F" };
-    const double default_points[] = { 5.0, 4.0, 3.0, 2.0, 1.0, 0.0 };
+    const char *default_symbols[] = {"A", "B", "C", "D", "E", "F"};
+    const double default_points[] = {5.0, 4.0, 3.0, 2.0, 1.0, 0.0};
     for (size_t i = 0; i < 6; i++) {
         GGGradeItem itm;
         snprintf(itm.grade_symbol, sizeof(itm.grade_symbol), "%s", default_symbols[i]);
         itm.grade_point = default_points[i];
-        state->rows[i] = gg_grade_row_create(&itm, G_CALLBACK(on_wizard_grade_changed), G_CALLBACK(on_wizard_grade_removed), state);
+        state->rows[i] =
+            gg_grade_row_create(&itm, G_CALLBACK(on_wizard_grade_changed), G_CALLBACK(on_wizard_grade_removed), state);
         g_object_set_data(G_OBJECT(state->rows[i]->container), "wizard_state", state);
         gtk_box_append(GTK_BOX(state->grade_box), state->rows[i]->container);
     }

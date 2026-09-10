@@ -1,10 +1,10 @@
 #ifndef GG_IO_TYPES_H
 #define GG_IO_TYPES_H
 
-#include <stdint.h>
-#include <stddef.h>
-#include <stdbool.h>
 #include "../core/gg_types.h"
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
 typedef struct {
     size_t row_number;
@@ -22,7 +22,8 @@ typedef struct {
 } GGImportSummary;
 
 GGStatus gg_import_summary_create(GGImportSummary **out_summary);
-GGStatus gg_import_summary_add_rejection(GGImportSummary *summary, size_t row, const char *field, const char *val, const char *reason);
+GGStatus gg_import_summary_add_rejection(GGImportSummary *summary, size_t row, const char *field, const char *val,
+                                         const char *reason);
 void gg_import_summary_destroy(GGImportSummary *summary);
 
 #endif

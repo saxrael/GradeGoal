@@ -1,8 +1,8 @@
 #include "xlsx_exporter.h"
+#include "../core/course_list.h"
 #include <stdlib.h>
 #include <string.h>
 #include <xlsxwriter.h>
-#include "../core/course_list.h"
 
 GGStatus gg_xlsx_export(const char *filepath, GGScaleRepository *scale_repo, GGCourseRepository *course_repo) {
     if (filepath == NULL || scale_repo == NULL || course_repo == NULL) {

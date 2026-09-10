@@ -27,17 +27,9 @@ static void on_alert_response(GObject *source, GAsyncResult *result, gpointer us
     free(state);
 }
 
-void gg_confirmation_dialog_show(
-    GtkWindow *parent,
-    const char *title,
-    const char *message,
-    const char *detail,
-    const char *confirm_button_label,
-    const char *cancel_button_label,
-    bool is_destructive,
-    GGConfirmationCallback callback,
-    gpointer user_data
-) {
+void gg_confirmation_dialog_show(GtkWindow *parent, const char *title, const char *message, const char *detail,
+                                 const char *confirm_button_label, const char *cancel_button_label, bool is_destructive,
+                                 GGConfirmationCallback callback, gpointer user_data) {
     (void)title;
     (void)is_destructive;
 
@@ -48,7 +40,7 @@ void gg_confirmation_dialog_show(
 
     const char *cancel_text = cancel_button_label != NULL ? cancel_button_label : "Cancel";
     const char *confirm_text = confirm_button_label != NULL ? confirm_button_label : "Confirm";
-    const char *buttons[] = { cancel_text, confirm_text, NULL };
+    const char *buttons[] = {cancel_text, confirm_text, NULL};
     gtk_alert_dialog_set_buttons(dialog, buttons);
     gtk_alert_dialog_set_cancel_button(dialog, 0);
     gtk_alert_dialog_set_default_button(dialog, 1);

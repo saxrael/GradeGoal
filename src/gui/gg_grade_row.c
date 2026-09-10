@@ -1,9 +1,10 @@
 #include "gg_grade_row.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-GGGradeRow *gg_grade_row_create(const GGGradeItem *initial_item, GCallback on_changed, GCallback on_remove, gpointer user_data) {
+GGGradeRow *gg_grade_row_create(const GGGradeItem *initial_item, GCallback on_changed, GCallback on_remove,
+                                gpointer user_data) {
     GGGradeRow *row = (GGGradeRow *)calloc(1, sizeof(GGGradeRow));
     if (row == NULL) {
         return NULL;

@@ -1,8 +1,8 @@
 #ifndef GG_SEMESTER_LIST_ITEM_H
 #define GG_SEMESTER_LIST_ITEM_H
 
-#include "gg_gtk.h"
 #include "../core/gg_types.h"
+#include "gg_gtk.h"
 
 typedef struct {
     GtkWidget *container;
@@ -14,14 +14,9 @@ typedef struct {
     GtkWidget *course_list_box;
 } GGSemesterListItem;
 
-GGSemesterListItem *gg_semester_list_item_create(
-    const char *semester_label,
-    const GGCourseList *courses,
-    const GGGradingScale *scale,
-    GCallback on_edit_course,
-    GCallback on_delete_course,
-    gpointer user_data
-);
+GGSemesterListItem *gg_semester_list_item_create(const char *semester_label, const GGCourseList *courses,
+                                                 const GGGradingScale *scale, GCallback on_edit_course,
+                                                 GCallback on_delete_course, gpointer user_data);
 void gg_semester_list_item_destroy(GGSemesterListItem *item);
 
 #endif

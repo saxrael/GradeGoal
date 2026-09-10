@@ -1,14 +1,14 @@
+#include "../core/course_list.h"
+#include "course_repository.h"
+#include "scale_repository.h"
+#include "sqlite_connection.h"
+#include "sqlite_error.h"
 #include "unity.h"
-#include <string.h>
+#include <sqlite3.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <sqlite3.h>
-#include "sqlite_connection.h"
-#include "scale_repository.h"
-#include "course_repository.h"
-#include "../core/course_list.h"
-#include "sqlite_error.h"
+#include <string.h>
 
 static GGDbConnection *global_conn = NULL;
 static GGScaleRepository *global_scale_repo = NULL;
@@ -491,14 +491,9 @@ static void test_disconnect_rolls_back_uncommitted(void) {
 }
 
 static void test_scale_repository_16_items_max_capacity(void) {
-    const char *symbols[16] = {
-        "A+", "A", "A-", "B+", "B", "B-", "C+", "C",
-        "C-", "D+", "D", "D-", "E", "F+", "F", "F-"
-    };
-    const double points[16] = {
-        5.0, 4.7, 4.3, 4.0, 3.7, 3.3, 3.0, 2.7,
-        2.3, 2.0, 1.7, 1.3, 1.0, 0.7, 0.3, 0.0
-    };
+    const char *symbols[16] = {"A+", "A",  "A-", "B+", "B", "B-", "C+", "C",
+                               "C-", "D+", "D",  "D-", "E", "F+", "F",  "F-"};
+    const double points[16] = {5.0, 4.7, 4.3, 4.0, 3.7, 3.3, 3.0, 2.7, 2.3, 2.0, 1.7, 1.3, 1.0, 0.7, 0.3, 0.0};
 
     GGGradingScale scale;
     memset(&scale, 0, sizeof(scale));

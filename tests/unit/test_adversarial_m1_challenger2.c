@@ -1,16 +1,14 @@
-#include "unity.h"
-#include "scale_validator.h"
 #include "course_list.h"
-#include <string.h>
+#include "scale_validator.h"
+#include "unity.h"
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
+#include <string.h>
 
-void setUp(void) {
-}
+void setUp(void) {}
 
-void tearDown(void) {
-}
+void tearDown(void) {}
 
 static GGGradingScale create_standard_scale(void) {
     GGGradingScale scale;
@@ -480,7 +478,6 @@ static void test_course_scale_items_non_null_terminated_safely_handled(void) {
     strncpy(entry.grade_symbol, "Z", sizeof(entry.grade_symbol) - 1);
     TEST_ASSERT_EQUAL(GG_ERR_VALIDATION, gg_scale_validator_validate_course(&scale, &entry));
 }
-
 
 static void test_course_list_null_arguments(void) {
     GGCourseList *list = NULL;

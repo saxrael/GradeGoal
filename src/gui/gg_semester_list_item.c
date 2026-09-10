@@ -1,6 +1,6 @@
 #include "gg_semester_list_item.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 typedef struct {
@@ -17,14 +17,9 @@ static void on_item_action_clicked(GtkButton *button, gpointer user_data) {
     }
 }
 
-GGSemesterListItem *gg_semester_list_item_create(
-    const char *semester_label,
-    const GGCourseList *courses,
-    const GGGradingScale *scale,
-    GCallback on_edit_course,
-    GCallback on_delete_course,
-    gpointer user_data
-) {
+GGSemesterListItem *gg_semester_list_item_create(const char *semester_label, const GGCourseList *courses,
+                                                 const GGGradingScale *scale, GCallback on_edit_course,
+                                                 GCallback on_delete_course, gpointer user_data) {
     GGSemesterListItem *item = (GGSemesterListItem *)calloc(1, sizeof(GGSemesterListItem));
     if (item == NULL) {
         return NULL;
@@ -75,8 +70,7 @@ GGSemesterListItem *gg_semester_list_item_create(
                 char course_line[128];
                 snprintf(course_line, sizeof(course_line), "• %s (%u units) — Grade: %s",
                          courses->entries[i].course_label[0] != '\0' ? courses->entries[i].course_label : "Course",
-                         courses->entries[i].credit_unit,
-                         courses->entries[i].grade_symbol);
+                         courses->entries[i].credit_unit, courses->entries[i].grade_symbol);
                 GtkWidget *lbl = gtk_label_new(course_line);
                 gtk_widget_set_halign(lbl, GTK_ALIGN_START);
                 gtk_widget_set_hexpand(lbl, TRUE);
