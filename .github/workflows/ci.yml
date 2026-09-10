@@ -100,29 +100,43 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           powershell -ExecutionPolicy Bypass -File packaging/windows/collect_dependencies.ps1
+          New-Item -ItemType Directory -Force -Path release-package
           if (Get-Command iscc -ErrorAction SilentlyContinue) {
             iscc packaging/windows/setup.iss
-            if (Test-Path dist-installer) {
-              Copy-Item dist-installer/*.exe dist/ -Force
+            if (Test-Path dist-installer/GradeGoal_Setup_Windows_x64.exe) {
+              Copy-Item dist-installer/GradeGoal_Setup_Windows_x64.exe release-package/ -Force
             }
+          }
+          if (-not (Test-Path release-package/GradeGoal_Setup_Windows_x64.exe)) {
+            Compress-Archive -Path dist/* -DestinationPath release-package/GradeGoal_Windows_x64_Portable.zip -Force
           }
 
       - name: Package Linux
         if: runner.os == 'Linux'
         run: |
           bash packaging/linux/build_appimage.sh
-          mkdir -p dist
-          mv GradeGoal*.AppImage dist/ 2>/dev/null || true
+          mkdir -p release-package
+          if [ -f "dist/GradeGoal_Linux_x86_64.tar.gz" ]; then
+            cp dist/GradeGoal_Linux_x86_64.tar.gz release-package/
+          fi
+          if ls GradeGoal*.AppImage 1>/dev/null 2>&1; then
+            cp GradeGoal*.AppImage release-package/
+          elif ls dist/*.AppImage 1>/dev/null 2>&1; then
+            cp dist/*.AppImage release-package/
+          fi
 
       - name: Package macOS
         if: runner.os == 'macOS'
-        run: bash packaging/macos/build_dmg.sh
+        run: |
+          bash packaging/macos/build_dmg.sh
+          mkdir -p release-package
+          if [ -f "dist/GradeGoal_macOS.dmg" ]; then
+            cp dist/GradeGoal_macOS.dmg release-package/
+          fi
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: GradeGoal-Installer-${{ runner.os }}
-          path: |
-            dist
-            dist-installer
-          if-no-files-found: ignore
+          path: release-package/*
+          if-no-files-found: error
