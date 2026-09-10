@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/gradegoal/GradeGoal">
+    <file alias="theme/gradegoal-light.css">theme/gradegoal-light.css</file>
+    <file alias="theme/gradegoal-dark.css">theme/gradegoal-dark.css</file>
+    <file alias="fonts/PlusJakartaSans-Regular.ttf">fonts/PlusJakartaSans/PlusJakartaSans-Regular.ttf</file>
+    <file alias="fonts/PlusJakartaSans-Medium.ttf">fonts/PlusJakartaSans/PlusJakartaSans-Medium.ttf</file>
+    <file alias="fonts/PlusJakartaSans-SemiBold.ttf">fonts/PlusJakartaSans/PlusJakartaSans-SemiBold.ttf</file>
+    <file alias="fonts/PlusJakartaSans-Bold.ttf">fonts/PlusJakartaSans/PlusJakartaSans-Bold.ttf</file>
+    <file alias="fonts/SourceSerif4-SemiBold.ttf">fonts/SourceSerif4/SourceSerif4-SemiBold.ttf</file>
+    <file alias="icons/hicolor/16x16/apps/gradegoal.png">icon/hicolor/16x16/apps/gradegoal.png</file>
+    <file alias="icons/hicolor/32x32/apps/gradegoal.png">icon/hicolor/32x32/apps/gradegoal.png</file>
+    <file alias="icons/hicolor/48x48/apps/gradegoal.png">icon/hicolor/48x48/apps/gradegoal.png</file>
+    <file alias="icons/hicolor/64x64/apps/gradegoal.png">icon/hicolor/64x64/apps/gradegoal.png</file>
+    <file alias="icons/hicolor/128x128/apps/gradegoal.png">icon/hicolor/128x128/apps/gradegoal.png</file>
+    <file alias="icons/hicolor/256x256/apps/gradegoal.png">icon/hicolor/256x256/apps/gradegoal.png</file>
+  </gresource>
+</gresources>

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=GradeGoal
+Comment=Cumulative CGPA and Target Grade Solver
+Exec=GradeGoal
+Icon=gradegoal
+Categories=Education;Science;
+Terminal=false
+StartupNotify=true

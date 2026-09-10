@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=GradeGoal
+Comment=Academic CGPA Planning and Tracking
+Exec=GradeGoal
+Icon=gradegoal
+Terminal=false
+Categories=Education;Science;
+StartupNotify=true

@@ -1,0 +1,16 @@
+<?xml version="1.0" standalone="no"?>
+<app-bundle>
+  <meta>
+    <prefix name="default">${env:HOMEBREW_PREFIX}</prefix>
+    <destination overwrite="yes">${project}/dist/GradeGoal.app</destination>
+    <image>dist/GradeGoal.app</image>
+  </meta>
+  <plist>${project}/packaging/macos/Info.plist</plist>
+  <main-binary>${project}/build/bin/GradeGoal</main-binary>
+  <binary dest="${bundle}/Contents/MacOS">
+    ${project}/build/bin/GradeGoal
+  </binary>
+  <data dest="${bundle}/Contents/Resources">
+    ${project}/assets/icon/icon.icns
+  </data>
+</app-bundle>

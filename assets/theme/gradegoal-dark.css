@@ -1,0 +1,167 @@
+window {
+    background-color: #0B1026;
+    color: #F0F4FF;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 14px;
+}
+
+headerbar {
+    background-color: #070B1B;
+    color: #F0F4FF;
+    border-bottom: 2px solid rgba(253, 174, 58, 0.40);
+    padding: 6px 12px;
+}
+
+headerbar label.title {
+    font-family: "Source Serif 4", serif;
+    font-weight: 600;
+    font-size: 18px;
+    color: #FDAE3A;
+}
+
+headerbar button {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #F0F4FF;
+    border: 1px solid rgba(253, 174, 58, 0.30);
+    border-radius: 6px;
+}
+
+headerbar button:hover {
+    background-color: rgba(255, 255, 255, 0.16);
+    border-color: #FDAE3A;
+}
+
+headerbar button:checked,
+headerbar button:active {
+    background-color: #FDAE3A;
+    color: #070B1B;
+    font-weight: 600;
+}
+
+.screen-title {
+    font-family: "Source Serif 4", serif;
+    font-weight: 600;
+    font-size: 24px;
+    color: #FDAE3A;
+    margin-bottom: 8px;
+}
+
+.serif-title {
+    font-family: "Source Serif 4", serif;
+    font-weight: 600;
+}
+
+.cgpa-large-number {
+    font-family: "Source Serif 4", serif;
+    font-weight: 600;
+    font-size: 42px;
+    color: #FDAE3A;
+}
+
+.card {
+    padding: 16px;
+    border-radius: 10px;
+    background-color: #121A3B;
+    margin: 6px;
+    border: 1px solid rgba(253, 174, 58, 0.18);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.accent-cgpa {
+    border-left: 5px solid #FDAE3A;
+}
+
+.accent-tcp {
+    border-left: 5px solid #4C6EF5;
+}
+
+.accent-tcu {
+    border-left: 5px solid #748FFC;
+}
+
+.accent-standing {
+    border-left: 5px solid #FDAE3A;
+}
+
+.accent-success {
+    border-left: 5px solid #22C55E;
+    background-color: rgba(34, 197, 94, 0.15);
+}
+
+.accent-warning {
+    border-left: 5px solid #F59E0B;
+    background-color: rgba(245, 158, 11, 0.15);
+}
+
+.accent-info {
+    border-left: 5px solid #60A5FA;
+    background-color: rgba(96, 165, 250, 0.12);
+}
+
+button {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-weight: 500;
+    border-radius: 6px;
+    padding: 6px 14px;
+}
+
+button.suggested-action {
+    background-color: #FDAE3A;
+    color: #070B1B;
+    font-weight: 600;
+    border: 1px solid #FDAE3A;
+}
+
+button.suggested-action:hover {
+    background-color: #FBBF24;
+    border-color: #FBBF24;
+}
+
+button.accent-cta {
+    background-color: #FDAE3A;
+    color: #070B1B;
+    font-weight: 600;
+    border: 1px solid #FDAE3A;
+}
+
+button.accent-cta:hover {
+    background-color: #FBBF24;
+}
+
+button.destructive-action {
+    background-color: #EF4444;
+    color: #FFFFFF;
+    border: 1px solid #EF4444;
+}
+
+entry,
+spinbutton {
+    background-color: #162047;
+    color: #F0F4FF;
+    border: 1px solid rgba(253, 174, 58, 0.25);
+    border-radius: 6px;
+    padding: 6px 10px;
+}
+
+entry:focus,
+spinbutton:focus {
+    border: 2px solid #FDAE3A;
+}
+
+.error {
+    color: #F87171;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.dim-label {
+    color: rgba(240, 244, 255, 0.65);
+}
+
+.highlight-badge {
+    background-color: #FFDB2F;
+    color: #070B1B;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+}

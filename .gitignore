@@ -1,0 +1,53 @@
+﻿# Build Directories & Artifacts
+build/
+build-*/
+bin/
+out/
+
+# CMake Generated Files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+CTestTestfile.cmake
+Testing/
+
+# Compiled Binaries & Object Files
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.dylib
+*.exe
+*.out
+
+# Local Databases & Automatic Backups
+*.db
+*.db-wal
+*.db-shm
+backups/
+
+# Multi-Agent Swarm Workspaces
+.agents/
+.agent/
+
+# Project Documentation & Agent Directives (per request)
+docs/
+AGENTS.md
+SKILLS_MANIFEST.md
+STAGE_PROTOCOLS.md
+PROJECT.md
+ORIGINAL_REQUEST.md
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & Editor Configurations
+.vscode/
+.idea/
+*.swp
+*~
