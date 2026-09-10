@@ -1,16 +1,22 @@
-# GradeGoal
+<div align="center">
+  <img src="assets/icon/icon.png" alt="GradeGoal Logo" width="128" height="128" />
 
-> **A modern, high-performance, fully offline C17/GTK4 desktop application that tracks real university CGPA on a configurable scale and deterministically computes the exact grades needed to reach your academic target.**
+  # GradeGoal
 
-[![CI Pipeline](https://github.com/saxrael/GradeGoal/actions/workflows/ci.yml/badge.svg)](https://github.com/saxrael/GradeGoal/actions/workflows/ci.yml)
-[![Language: C17](https://img.shields.io/badge/Language-C17-00599C?logo=c&logoColor=white)](https://en.cppreference.com/w/c/17)
-[![GUI: GTK4](https://img.shields.io/badge/GUI-GTK4-4A90E2?logo=gnome&logoColor=white)](https://www.gtk.org/)
-[![Database: SQLite3](https://img.shields.io/badge/Database-SQLite3-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/)
-[![Platform: Windows | Linux | macOS](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-informational)](https://github.com/saxrael/GradeGoal/releases)
-[![Tests: 12/12 Passed](https://img.shields.io/badge/Tests-12%2F12%20Passed%20(100%25)-success)](tests/)
-[![Memory Audit: Clean](https://img.shields.io/badge/Valgrind%20%26%20ASan-0%20Leaks-brightgreen)](tests/)
-[![License: MIT / LGPLv2.1+](https://img.shields.io/badge/License-MIT%20%2F%20LGPLv2.1%2B-blue.svg)](LICENSE)
-[![Source Comments: 0](https://img.shields.io/badge/Source%20Comments-0%20(100%25%20Self--Documenting)-purple.svg)](AGENTS.md)
+  **A modern, high-performance, fully offline C17/GTK4 desktop application that tracks real university CGPA on a configurable scale and deterministically computes the exact grades needed to reach your academic target.**
+
+  <p align="center">
+    <a href="https://github.com/saxrael/GradeGoal/actions/workflows/ci.yml"><img src="https://github.com/saxrael/GradeGoal/actions/workflows/ci.yml/badge.svg" alt="CI Pipeline" /></a>
+    <a href="https://en.cppreference.com/w/c/17"><img src="https://img.shields.io/badge/Language-C17-00599C?logo=c&logoColor=white" alt="Language: C17" /></a>
+    <a href="https://www.gtk.org/"><img src="https://img.shields.io/badge/GUI-GTK4-4A90E2?logo=gnome&logoColor=white" alt="GUI: GTK4" /></a>
+    <a href="https://www.sqlite.org/"><img src="https://img.shields.io/badge/Database-SQLite3-003B57?logo=sqlite&logoColor=white" alt="Database: SQLite3" /></a>
+    <a href="https://github.com/saxrael/GradeGoal/releases"><img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-informational" alt="Platform: Windows | Linux | macOS" /></a>
+    <a href="tests/"><img src="https://img.shields.io/badge/Tests-12%2F12%20Passed%20(100%25)-success" alt="Tests: 12/12 Passed" /></a>
+    <a href="tests/"><img src="https://img.shields.io/badge/Valgrind%20%26%20ASan-0%20Leaks-brightgreen" alt="Memory Audit: Clean" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT%20%2F%20LGPLv2.1%2B-blue.svg" alt="License: MIT / LGPLv2.1+" /></a>
+    <a href="AGENTS.md"><img src="https://img.shields.io/badge/Source%20Comments-0%20(100%25%20Self--Documenting)-purple.svg" alt="Source Comments: 0" /></a>
+  </p>
+</div>
 
 ---
 
