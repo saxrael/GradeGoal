@@ -150,17 +150,34 @@ static void on_quick_add_course_clicked(GtkButton *button, gpointer user_data) {
     gtk_widget_set_halign(title, GTK_ALIGN_START);
     gtk_box_append(GTK_BOX(box), title);
 
+    GtkWidget *lbl_sem = gtk_label_new("Semester");
+    gtk_widget_set_halign(lbl_sem, GTK_ALIGN_START);
+    gtk_widget_add_css_class(lbl_sem, "form-label");
     dlg->sem_entry = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(dlg->sem_entry), "Semester (e.g. Year 1 Sem 1)");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(dlg->sem_entry), "e.g. Year 1 Sem 1");
+    gtk_box_append(GTK_BOX(box), lbl_sem);
     gtk_box_append(GTK_BOX(box), dlg->sem_entry);
 
+    GtkWidget *lbl_code = gtk_label_new("Course Code");
+    gtk_widget_set_halign(lbl_code, GTK_ALIGN_START);
+    gtk_widget_add_css_class(lbl_code, "form-label");
     dlg->code_entry = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(dlg->code_entry), "Course Code (e.g. CSC101)");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(dlg->code_entry), "e.g. CSC101");
+    gtk_box_append(GTK_BOX(box), lbl_code);
     gtk_box_append(GTK_BOX(box), dlg->code_entry);
 
+    GtkWidget *lbl_unit = gtk_label_new("Credit Units");
+    gtk_widget_set_halign(lbl_unit, GTK_ALIGN_START);
+    gtk_widget_add_css_class(lbl_unit, "form-label");
     dlg->unit_entry = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(dlg->unit_entry), "Credit Units (1-10)");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(dlg->unit_entry), "e.g. 3 (1-10)");
+    gtk_box_append(GTK_BOX(box), lbl_unit);
     gtk_box_append(GTK_BOX(box), dlg->unit_entry);
+
+    GtkWidget *lbl_grade = gtk_label_new("Assigned Grade");
+    gtk_widget_set_halign(lbl_grade, GTK_ALIGN_START);
+    gtk_widget_add_css_class(lbl_grade, "form-label");
+    gtk_box_append(GTK_BOX(box), lbl_grade);
 
     const char *symbols[17];
     for (size_t i = 0; i < scale.count; i++) {
@@ -281,19 +298,36 @@ static void on_dashboard_edit_course(int64_t course_id, gpointer user_data) {
     gtk_widget_set_halign(title, GTK_ALIGN_START);
     gtk_box_append(GTK_BOX(box), title);
 
+    GtkWidget *lbl_sem = gtk_label_new("Semester");
+    gtk_widget_set_halign(lbl_sem, GTK_ALIGN_START);
+    gtk_widget_add_css_class(lbl_sem, "form-label");
     dlg->sem_entry = gtk_entry_new();
     gtk_editable_set_text(GTK_EDITABLE(dlg->sem_entry), entry.semester_label);
+    gtk_box_append(GTK_BOX(box), lbl_sem);
     gtk_box_append(GTK_BOX(box), dlg->sem_entry);
 
+    GtkWidget *lbl_code = gtk_label_new("Course Code");
+    gtk_widget_set_halign(lbl_code, GTK_ALIGN_START);
+    gtk_widget_add_css_class(lbl_code, "form-label");
     dlg->code_entry = gtk_entry_new();
     gtk_editable_set_text(GTK_EDITABLE(dlg->code_entry), entry.course_label);
+    gtk_box_append(GTK_BOX(box), lbl_code);
     gtk_box_append(GTK_BOX(box), dlg->code_entry);
 
+    GtkWidget *lbl_unit = gtk_label_new("Credit Units");
+    gtk_widget_set_halign(lbl_unit, GTK_ALIGN_START);
+    gtk_widget_add_css_class(lbl_unit, "form-label");
     dlg->unit_entry = gtk_entry_new();
     char ubuf[16];
     snprintf(ubuf, sizeof(ubuf), "%u", entry.credit_unit);
     gtk_editable_set_text(GTK_EDITABLE(dlg->unit_entry), ubuf);
+    gtk_box_append(GTK_BOX(box), lbl_unit);
     gtk_box_append(GTK_BOX(box), dlg->unit_entry);
+
+    GtkWidget *lbl_grade = gtk_label_new("Assigned Grade");
+    gtk_widget_set_halign(lbl_grade, GTK_ALIGN_START);
+    gtk_widget_add_css_class(lbl_grade, "form-label");
+    gtk_box_append(GTK_BOX(box), lbl_grade);
 
     const char *symbols[17];
     guint selected_idx = 0;
@@ -438,26 +472,32 @@ void gg_dashboard_widget_refresh(GtkWidget *widget) {
     }
 }
 
-static GtkWidget *create_metric_card(const char *title, GtkWidget **val_label_out, const char *accent_class) {
+static GtkWidget *create_metric_card(const char *title, const char *sub_text, GtkWidget **val_label_out,
+                                     const char *accent_class) {
     GtkWidget *card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
-    gtk_widget_add_css_class(card, "card");
+    gtk_widget_add_css_class(card, "metric-card");
     gtk_widget_add_css_class(card, accent_class);
-    gtk_widget_set_margin_start(card, 6);
-    gtk_widget_set_margin_end(card, 6);
-    gtk_widget_set_margin_top(card, 6);
-    gtk_widget_set_margin_bottom(card, 6);
+    gtk_widget_set_margin_start(card, 4);
+    gtk_widget_set_margin_end(card, 4);
+    gtk_widget_set_margin_top(card, 4);
+    gtk_widget_set_margin_bottom(card, 4);
     gtk_widget_set_hexpand(card, TRUE);
 
     GtkWidget *lbl_title = gtk_label_new(title);
     gtk_widget_set_halign(lbl_title, GTK_ALIGN_START);
-    gtk_widget_add_css_class(lbl_title, "caption");
+    gtk_widget_add_css_class(lbl_title, "metric-title");
 
     GtkWidget *lbl_val = gtk_label_new("0.00");
     gtk_widget_set_halign(lbl_val, GTK_ALIGN_START);
     gtk_widget_add_css_class(lbl_val, "title-1");
 
+    GtkWidget *lbl_sub = gtk_label_new(sub_text);
+    gtk_widget_set_halign(lbl_sub, GTK_ALIGN_START);
+    gtk_widget_add_css_class(lbl_sub, "metric-sub");
+
     gtk_box_append(GTK_BOX(card), lbl_title);
     gtk_box_append(GTK_BOX(card), lbl_val);
+    gtk_box_append(GTK_BOX(card), lbl_sub);
 
     *val_label_out = lbl_val;
     return card;
@@ -481,13 +521,19 @@ GtkWidget *gg_dashboard_widget_create(GGAppContext *ctx) {
     gtk_widget_set_halign(screen_title, GTK_ALIGN_START);
     gtk_box_append(GTK_BOX(state->container), screen_title);
 
+    GtkWidget *screen_sub = gtk_label_new("Cumulative academic performance overview and registered coursework");
+    gtk_widget_add_css_class(screen_sub, "dim-label");
+    gtk_widget_set_halign(screen_sub, GTK_ALIGN_START);
+    gtk_widget_set_margin_bottom(screen_sub, 4);
+    gtk_box_append(GTK_BOX(state->container), screen_sub);
+
     GtkWidget *metrics_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
-    GtkWidget *card_cgpa = create_metric_card("CURRENT CGPA", &state->cgpa_val_label, "accent-cgpa");
+    GtkWidget *card_cgpa = create_metric_card("CURRENT CGPA", "Scale 5.00 Max", &state->cgpa_val_label, "accent-cgpa");
     gtk_widget_remove_css_class(state->cgpa_val_label, "title-1");
     gtk_widget_add_css_class(state->cgpa_val_label, "cgpa-large-number");
-    GtkWidget *card_tcp = create_metric_card("TOTAL POINTS (TCP)", &state->tcp_val_label, "accent-tcp");
-    GtkWidget *card_tcu = create_metric_card("TOTAL UNITS (TCU)", &state->tcu_val_label, "accent-tcu");
-    GtkWidget *card_standing = create_metric_card("CLASS STANDING", &state->standing_val_label, "accent-standing");
+    GtkWidget *card_tcp = create_metric_card("TOTAL POINTS (TCP)", "Cumulative Points", &state->tcp_val_label, "accent-tcp");
+    GtkWidget *card_tcu = create_metric_card("TOTAL UNITS (TCU)", "Registered Credits", &state->tcu_val_label, "accent-tcu");
+    GtkWidget *card_standing = create_metric_card("CLASS STANDING", "Degree Classification", &state->standing_val_label, "accent-standing");
 
     gtk_box_append(GTK_BOX(metrics_box), card_cgpa);
     gtk_box_append(GTK_BOX(metrics_box), card_tcp);
@@ -516,10 +562,22 @@ GtkWidget *gg_dashboard_widget_create(GGAppContext *ctx) {
     state->semesters_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
     gtk_box_append(GTK_BOX(scroll_content), state->semesters_box);
 
-    state->empty_label = gtk_label_new(
-        "No academic semesters recorded yet.\nNavigate to History or use Quick Add to enter your coursework.");
-    gtk_widget_add_css_class(state->empty_label, "dim-label");
-    gtk_widget_set_margin_top(state->empty_label, 40);
+    GtkWidget *empty_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
+    gtk_widget_add_css_class(empty_card, "empty-state-card");
+    gtk_widget_set_margin_top(empty_card, 24);
+
+    GtkWidget *empty_title = gtk_label_new("No Academic Records Recorded Yet");
+    gtk_widget_add_css_class(empty_title, "title-3");
+    gtk_widget_set_halign(empty_title, GTK_ALIGN_CENTER);
+
+    GtkWidget *empty_desc = gtk_label_new(
+        "Navigate to History or use Quick-Add Course above to enter courses and calculate your CGPA.");
+    gtk_widget_add_css_class(empty_desc, "dim-label");
+    gtk_widget_set_halign(empty_desc, GTK_ALIGN_CENTER);
+
+    gtk_box_append(GTK_BOX(empty_card), empty_title);
+    gtk_box_append(GTK_BOX(empty_card), empty_desc);
+    state->empty_label = empty_card;
     gtk_box_append(GTK_BOX(scroll_content), state->empty_label);
 
     gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scroll), scroll_content);

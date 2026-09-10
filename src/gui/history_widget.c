@@ -38,6 +38,23 @@ typedef struct {
     GGGradingScale scale;
 } GGHistoryEditDialogState;
 
+static const char *get_grade_badge_class(const char *symbol) {
+    if (symbol == NULL || symbol[0] == '\0') {
+        return "badge";
+    }
+    char c = symbol[0];
+    if (c == 'A' || c == 'a') {
+        return "badge-grade-a";
+    } else if (c == 'B' || c == 'b') {
+        return "badge-grade-b";
+    } else if (c == 'C' || c == 'c') {
+        return "badge-grade-c";
+    } else if (c == 'D' || c == 'd') {
+        return "badge-grade-d";
+    }
+    return "badge-grade-f";
+}
+
 static void on_delete_confirmed(bool confirmed, gpointer user_data) {
     GGDeleteCourseContext *ctx = (GGDeleteCourseContext *)user_data;
     if (confirmed && ctx != NULL && ctx->state != NULL && ctx->state->ctx != NULL &&
@@ -157,19 +174,36 @@ static void on_edit_course_clicked(GtkButton *button, gpointer user_data) {
     gtk_widget_set_halign(title, GTK_ALIGN_START);
     gtk_box_append(GTK_BOX(box), title);
 
+    GtkWidget *lbl_sem = gtk_label_new("Semester");
+    gtk_widget_set_halign(lbl_sem, GTK_ALIGN_START);
+    gtk_widget_add_css_class(lbl_sem, "form-label");
     dlg->sem_entry = gtk_entry_new();
     gtk_editable_set_text(GTK_EDITABLE(dlg->sem_entry), entry.semester_label);
+    gtk_box_append(GTK_BOX(box), lbl_sem);
     gtk_box_append(GTK_BOX(box), dlg->sem_entry);
 
+    GtkWidget *lbl_code = gtk_label_new("Course Code");
+    gtk_widget_set_halign(lbl_code, GTK_ALIGN_START);
+    gtk_widget_add_css_class(lbl_code, "form-label");
     dlg->code_entry = gtk_entry_new();
     gtk_editable_set_text(GTK_EDITABLE(dlg->code_entry), entry.course_label);
+    gtk_box_append(GTK_BOX(box), lbl_code);
     gtk_box_append(GTK_BOX(box), dlg->code_entry);
 
+    GtkWidget *lbl_unit = gtk_label_new("Credit Units");
+    gtk_widget_set_halign(lbl_unit, GTK_ALIGN_START);
+    gtk_widget_add_css_class(lbl_unit, "form-label");
     dlg->unit_entry = gtk_entry_new();
     char ubuf[16];
     snprintf(ubuf, sizeof(ubuf), "%u", entry.credit_unit);
     gtk_editable_set_text(GTK_EDITABLE(dlg->unit_entry), ubuf);
+    gtk_box_append(GTK_BOX(box), lbl_unit);
     gtk_box_append(GTK_BOX(box), dlg->unit_entry);
+
+    GtkWidget *lbl_grade = gtk_label_new("Assigned Grade");
+    gtk_widget_set_halign(lbl_grade, GTK_ALIGN_START);
+    gtk_widget_add_css_class(lbl_grade, "form-label");
+    gtk_box_append(GTK_BOX(box), lbl_grade);
 
     const char *symbols[17];
     guint selected_idx = 0;
@@ -370,14 +404,45 @@ void gg_history_widget_refresh(GtkWidget *widget) {
     if (list != NULL && list->count > 0) {
         gtk_widget_set_visible(state->empty_label, FALSE);
 
+        GtkWidget *table_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+        gtk_widget_add_css_class(table_card, "data-table-container");
+
+        GtkWidget *header_row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
+        gtk_widget_add_css_class(header_row, "data-table-header");
+
+        GtkWidget *th_sem = gtk_label_new("SEMESTER");
+        gtk_widget_set_size_request(th_sem, 160, -1);
+        gtk_widget_set_halign(th_sem, GTK_ALIGN_START);
+
+        GtkWidget *th_code = gtk_label_new("COURSE CODE");
+        gtk_widget_set_hexpand(th_code, TRUE);
+        gtk_widget_set_halign(th_code, GTK_ALIGN_START);
+
+        GtkWidget *th_unit = gtk_label_new("CREDITS");
+        gtk_widget_set_size_request(th_unit, 90, -1);
+        gtk_widget_set_halign(th_unit, GTK_ALIGN_START);
+
+        GtkWidget *th_grade = gtk_label_new("GRADE");
+        gtk_widget_set_size_request(th_grade, 70, -1);
+        gtk_widget_set_halign(th_grade, GTK_ALIGN_START);
+
+        GtkWidget *th_act = gtk_label_new("ACTIONS");
+        gtk_widget_set_size_request(th_act, 130, -1);
+        gtk_widget_set_halign(th_act, GTK_ALIGN_END);
+
+        gtk_box_append(GTK_BOX(header_row), th_sem);
+        gtk_box_append(GTK_BOX(header_row), th_code);
+        gtk_box_append(GTK_BOX(header_row), th_unit);
+        gtk_box_append(GTK_BOX(header_row), th_grade);
+        gtk_box_append(GTK_BOX(header_row), th_act);
+        gtk_box_append(GTK_BOX(table_card), header_row);
+
         for (size_t i = 0; i < list->count; i++) {
             GtkWidget *row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
-            gtk_widget_set_margin_top(row, 4);
-            gtk_widget_set_margin_bottom(row, 4);
-            gtk_widget_add_css_class(row, "card");
+            gtk_widget_add_css_class(row, "data-table-row");
 
             GtkWidget *lbl_sem = gtk_label_new(list->entries[i].semester_label);
-            gtk_widget_set_size_request(lbl_sem, 140, -1);
+            gtk_widget_set_size_request(lbl_sem, 160, -1);
             gtk_widget_set_halign(lbl_sem, GTK_ALIGN_START);
 
             GtkWidget *lbl_code =
@@ -388,14 +453,23 @@ void gg_history_widget_refresh(GtkWidget *widget) {
             char unit_buf[16];
             snprintf(unit_buf, sizeof(unit_buf), "%u units", list->entries[i].credit_unit);
             GtkWidget *lbl_unit = gtk_label_new(unit_buf);
-            gtk_widget_set_size_request(lbl_unit, 80, -1);
+            gtk_widget_set_size_request(lbl_unit, 90, -1);
+            gtk_widget_set_halign(lbl_unit, GTK_ALIGN_START);
+            gtk_widget_add_css_class(lbl_unit, "dim-label");
 
-            char grade_buf[16];
-            snprintf(grade_buf, sizeof(grade_buf), "Grade: %s", list->entries[i].grade_symbol);
-            GtkWidget *lbl_grade = gtk_label_new(grade_buf);
-            gtk_widget_set_size_request(lbl_grade, 80, -1);
+            GtkWidget *lbl_grade = gtk_label_new(list->entries[i].grade_symbol);
+            gtk_widget_add_css_class(lbl_grade, get_grade_badge_class(list->entries[i].grade_symbol));
+            GtkWidget *grade_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+            gtk_widget_set_size_request(grade_box, 70, -1);
+            gtk_widget_set_halign(grade_box, GTK_ALIGN_START);
+            gtk_box_append(GTK_BOX(grade_box), lbl_grade);
+
+            GtkWidget *act_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
+            gtk_widget_set_size_request(act_box, 130, -1);
+            gtk_widget_set_halign(act_box, GTK_ALIGN_END);
 
             GtkWidget *edit_btn = gtk_button_new_with_label("Edit");
+            gtk_widget_add_css_class(edit_btn, "action-btn-sm");
             GGDeleteCourseContext *edit_ctx = (GGDeleteCourseContext *)calloc(1, sizeof(GGDeleteCourseContext));
             if (edit_ctx != NULL) {
                 edit_ctx->state = state;
@@ -405,6 +479,7 @@ void gg_history_widget_refresh(GtkWidget *widget) {
             }
 
             GtkWidget *del_btn = gtk_button_new_with_label("Delete");
+            gtk_widget_add_css_class(del_btn, "action-btn-sm");
             gtk_widget_add_css_class(del_btn, "destructive-action");
             GGDeleteCourseContext *del_ctx = (GGDeleteCourseContext *)calloc(1, sizeof(GGDeleteCourseContext));
             if (del_ctx != NULL) {
@@ -414,15 +489,18 @@ void gg_history_widget_refresh(GtkWidget *widget) {
                 g_signal_connect(del_btn, "clicked", G_CALLBACK(on_delete_course_clicked), del_ctx);
             }
 
+            gtk_box_append(GTK_BOX(act_box), edit_btn);
+            gtk_box_append(GTK_BOX(act_box), del_btn);
+
             gtk_box_append(GTK_BOX(row), lbl_sem);
             gtk_box_append(GTK_BOX(row), lbl_code);
             gtk_box_append(GTK_BOX(row), lbl_unit);
-            gtk_box_append(GTK_BOX(row), lbl_grade);
-            gtk_box_append(GTK_BOX(row), edit_btn);
-            gtk_box_append(GTK_BOX(row), del_btn);
+            gtk_box_append(GTK_BOX(row), grade_box);
+            gtk_box_append(GTK_BOX(row), act_box);
 
-            gtk_box_append(GTK_BOX(state->table_box), row);
+            gtk_box_append(GTK_BOX(table_card), row);
         }
+        gtk_box_append(GTK_BOX(state->table_box), table_card);
     } else {
         gtk_widget_set_visible(state->empty_label, TRUE);
     }
@@ -450,6 +528,12 @@ GtkWidget *gg_history_widget_create(GGAppContext *ctx) {
     gtk_widget_set_halign(title, GTK_ALIGN_START);
     gtk_box_append(GTK_BOX(state->container), title);
 
+    GtkWidget *screen_sub = gtk_label_new("View, filter, edit, or remove all recorded academic courses");
+    gtk_widget_add_css_class(screen_sub, "dim-label");
+    gtk_widget_set_halign(screen_sub, GTK_ALIGN_START);
+    gtk_widget_set_margin_bottom(screen_sub, 4);
+    gtk_box_append(GTK_BOX(state->container), screen_sub);
+
     GtkWidget *filter_bar = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
     GtkWidget *filter_label = gtk_label_new("Filter by Semester:");
     gtk_widget_set_halign(filter_label, GTK_ALIGN_START);
@@ -468,36 +552,74 @@ GtkWidget *gg_history_widget_create(GGAppContext *ctx) {
     gtk_box_append(GTK_BOX(filter_bar), new_sem_btn);
     gtk_box_append(GTK_BOX(state->container), filter_bar);
 
-    GtkWidget *add_card = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
+    GtkWidget *add_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_widget_add_css_class(add_card, "card");
-    gtk_widget_set_margin_bottom(add_card, 12);
+    gtk_widget_set_margin_bottom(add_card, 8);
 
+    GtkWidget *add_title = gtk_label_new("Record New Course Entry");
+    gtk_widget_add_css_class(add_title, "title-3");
+    gtk_widget_set_halign(add_title, GTK_ALIGN_START);
+    gtk_box_append(GTK_BOX(add_card), add_title);
+
+    GtkWidget *form_row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
+
+    GtkWidget *col_sem = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+    GtkWidget *lbl_sem = gtk_label_new("Semester");
+    gtk_widget_set_halign(lbl_sem, GTK_ALIGN_START);
+    gtk_widget_add_css_class(lbl_sem, "form-label");
     state->sem_entry = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(state->sem_entry), "Semester (e.g. Year 1 Sem 1)");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(state->sem_entry), "e.g. Year 1 Sem 1");
     gtk_widget_set_size_request(state->sem_entry, 180, -1);
+    gtk_box_append(GTK_BOX(col_sem), lbl_sem);
+    gtk_box_append(GTK_BOX(col_sem), state->sem_entry);
 
+    GtkWidget *col_code = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+    gtk_widget_set_hexpand(col_code, TRUE);
+    GtkWidget *lbl_code = gtk_label_new("Course Code");
+    gtk_widget_set_halign(lbl_code, GTK_ALIGN_START);
+    gtk_widget_add_css_class(lbl_code, "form-label");
     state->code_entry = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(state->code_entry), "Course Code (e.g. MTH101)");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(state->code_entry), "e.g. MTH101");
     gtk_widget_set_hexpand(state->code_entry, TRUE);
+    gtk_box_append(GTK_BOX(col_code), lbl_code);
+    gtk_box_append(GTK_BOX(col_code), state->code_entry);
 
+    GtkWidget *col_unit = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+    GtkWidget *lbl_unit = gtk_label_new("Credits");
+    gtk_widget_set_halign(lbl_unit, GTK_ALIGN_START);
+    gtk_widget_add_css_class(lbl_unit, "form-label");
     state->unit_entry = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(state->unit_entry), "Units (1-10)");
-    gtk_widget_set_size_request(state->unit_entry, 90, -1);
+    gtk_widget_set_size_request(state->unit_entry, 100, -1);
+    gtk_box_append(GTK_BOX(col_unit), lbl_unit);
+    gtk_box_append(GTK_BOX(col_unit), state->unit_entry);
 
+    GtkWidget *col_grade = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+    GtkWidget *lbl_grade = gtk_label_new("Grade");
+    gtk_widget_set_halign(lbl_grade, GTK_ALIGN_START);
+    gtk_widget_add_css_class(lbl_grade, "form-label");
     const char *initial_grades[] = {"A", "B", "C", "D", "E", "F", NULL};
     GtkStringList *init_grades = gtk_string_list_new(initial_grades);
     state->grade_dropdown = gtk_drop_down_new(G_LIST_MODEL(init_grades), NULL);
     gtk_widget_set_size_request(state->grade_dropdown, 110, -1);
+    gtk_box_append(GTK_BOX(col_grade), lbl_grade);
+    gtk_box_append(GTK_BOX(col_grade), state->grade_dropdown);
 
-    GtkWidget *add_btn = gtk_button_new_with_label("Add Course");
+    GtkWidget *col_btn = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+    GtkWidget *lbl_spacer = gtk_label_new("");
+    gtk_widget_add_css_class(lbl_spacer, "form-label");
+    GtkWidget *add_btn = gtk_button_new_with_label("+ Add Course");
     gtk_widget_add_css_class(add_btn, "suggested-action");
     g_signal_connect(add_btn, "clicked", G_CALLBACK(on_add_course_submitted), state);
+    gtk_box_append(GTK_BOX(col_btn), lbl_spacer);
+    gtk_box_append(GTK_BOX(col_btn), add_btn);
 
-    gtk_box_append(GTK_BOX(add_card), state->sem_entry);
-    gtk_box_append(GTK_BOX(add_card), state->code_entry);
-    gtk_box_append(GTK_BOX(add_card), state->unit_entry);
-    gtk_box_append(GTK_BOX(add_card), state->grade_dropdown);
-    gtk_box_append(GTK_BOX(add_card), add_btn);
+    gtk_box_append(GTK_BOX(form_row), col_sem);
+    gtk_box_append(GTK_BOX(form_row), col_code);
+    gtk_box_append(GTK_BOX(form_row), col_unit);
+    gtk_box_append(GTK_BOX(form_row), col_grade);
+    gtk_box_append(GTK_BOX(form_row), col_btn);
+    gtk_box_append(GTK_BOX(add_card), form_row);
     gtk_box_append(GTK_BOX(state->container), add_card);
 
     GtkWidget *scroll = gtk_scrolled_window_new();
@@ -507,10 +629,21 @@ GtkWidget *gg_history_widget_create(GGAppContext *ctx) {
     state->table_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
     gtk_box_append(GTK_BOX(scroll_content), state->table_box);
 
-    state->empty_label =
-        gtk_label_new("No course history records found.\nAdd courses above or import an existing backup.");
-    gtk_widget_add_css_class(state->empty_label, "dim-label");
-    gtk_widget_set_margin_top(state->empty_label, 40);
+    GtkWidget *empty_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
+    gtk_widget_add_css_class(empty_card, "empty-state-card");
+    gtk_widget_set_margin_top(empty_card, 24);
+
+    GtkWidget *empty_title = gtk_label_new("No Course Records Found");
+    gtk_widget_add_css_class(empty_title, "title-3");
+    gtk_widget_set_halign(empty_title, GTK_ALIGN_CENTER);
+
+    GtkWidget *empty_desc = gtk_label_new("Use the form above to add your coursework or import a backup spreadsheet from Settings.");
+    gtk_widget_add_css_class(empty_desc, "dim-label");
+    gtk_widget_set_halign(empty_desc, GTK_ALIGN_CENTER);
+
+    gtk_box_append(GTK_BOX(empty_card), empty_title);
+    gtk_box_append(GTK_BOX(empty_card), empty_desc);
+    state->empty_label = empty_card;
     gtk_box_append(GTK_BOX(scroll_content), state->empty_label);
 
     gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scroll), scroll_content);

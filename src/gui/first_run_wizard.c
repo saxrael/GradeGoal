@@ -254,11 +254,32 @@ GtkWidget *gg_first_run_wizard_create(GtkWindow *parent, GGAppContext *ctx, GCal
     gtk_box_append(GTK_BOX(root_box), state->stack);
     gtk_widget_set_vexpand(state->stack, TRUE);
 
-    GtkWidget *page_scale = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
-    GtkWidget *scale_title = gtk_label_new("Step 1: Configure Grading Scale");
+    GtkWidget *page_scale = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    GtkWidget *scale_title = gtk_label_new("Step 1 of 2: Configure Grading Scale");
     gtk_widget_add_css_class(scale_title, "title-2");
     gtk_widget_set_halign(scale_title, GTK_ALIGN_START);
+    GtkWidget *scale_sub =
+        gtk_label_new("Set up the letter grades and numerical point values used by your institution");
+    gtk_widget_add_css_class(scale_sub, "card-subtitle");
+    gtk_widget_set_halign(scale_sub, GTK_ALIGN_START);
     gtk_box_append(GTK_BOX(page_scale), scale_title);
+    gtk_box_append(GTK_BOX(page_scale), scale_sub);
+
+    GtkWidget *scale_table_hdr = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
+    gtk_widget_add_css_class(scale_table_hdr, "data-table-header");
+    GtkWidget *th_sym = gtk_label_new("GRADE SYMBOL");
+    gtk_widget_set_halign(th_sym, GTK_ALIGN_START);
+    gtk_widget_set_hexpand(th_sym, TRUE);
+    GtkWidget *th_pts = gtk_label_new("POINT VALUE");
+    gtk_widget_set_halign(th_pts, GTK_ALIGN_START);
+    gtk_widget_set_hexpand(th_pts, TRUE);
+    GtkWidget *th_act = gtk_label_new("ACTIONS");
+    gtk_widget_set_halign(th_act, GTK_ALIGN_CENTER);
+    gtk_widget_set_size_request(th_act, 80, -1);
+    gtk_box_append(GTK_BOX(scale_table_hdr), th_sym);
+    gtk_box_append(GTK_BOX(scale_table_hdr), th_pts);
+    gtk_box_append(GTK_BOX(scale_table_hdr), th_act);
+    gtk_box_append(GTK_BOX(page_scale), scale_table_hdr);
 
     GtkWidget *scroll = gtk_scrolled_window_new();
     gtk_widget_set_vexpand(scroll, TRUE);
@@ -299,26 +320,37 @@ GtkWidget *gg_first_run_wizard_create(GtkWindow *parent, GGAppContext *ctx, GCal
     gtk_box_append(GTK_BOX(page_scale), scale_action_bar);
 
     GtkWidget *page_prior = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
-    GtkWidget *prior_title = gtk_label_new("Step 2: Enter Prior Standing");
+    GtkWidget *prior_title = gtk_label_new("Step 2 of 2: Enter Prior Academic Standing");
     gtk_widget_add_css_class(prior_title, "title-2");
     gtk_widget_set_halign(prior_title, GTK_ALIGN_START);
+    GtkWidget *prior_sub =
+        gtk_label_new("If you have completed semesters previously, enter your cumulative totals below");
+    gtk_widget_add_css_class(prior_sub, "card-subtitle");
+    gtk_widget_set_halign(prior_sub, GTK_ALIGN_START);
     gtk_box_append(GTK_BOX(page_prior), prior_title);
+    gtk_box_append(GTK_BOX(page_prior), prior_sub);
 
-    GtkWidget *tcp_label = gtk_label_new("Prior Total Credit Points (TCP):");
+    GtkWidget *tcp_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+    GtkWidget *tcp_label = gtk_label_new("Prior Total Credit Points (TCP)");
+    gtk_widget_add_css_class(tcp_label, "form-label");
     gtk_widget_set_halign(tcp_label, GTK_ALIGN_START);
     state->prior_tcp_entry = gtk_entry_new();
     gtk_editable_set_text(GTK_EDITABLE(state->prior_tcp_entry), "0.00");
-    gtk_box_append(GTK_BOX(page_prior), tcp_label);
-    gtk_box_append(GTK_BOX(page_prior), state->prior_tcp_entry);
+    gtk_box_append(GTK_BOX(tcp_box), tcp_label);
+    gtk_box_append(GTK_BOX(tcp_box), state->prior_tcp_entry);
+    gtk_box_append(GTK_BOX(page_prior), tcp_box);
 
-    GtkWidget *tcu_label = gtk_label_new("Prior Total Credit Units (TCU):");
+    GtkWidget *tcu_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+    GtkWidget *tcu_label = gtk_label_new("Prior Total Credit Units (TCU)");
+    gtk_widget_add_css_class(tcu_label, "form-label");
     gtk_widget_set_halign(tcu_label, GTK_ALIGN_START);
     state->prior_tcu_entry = gtk_entry_new();
     gtk_editable_set_text(GTK_EDITABLE(state->prior_tcu_entry), "0");
-    gtk_box_append(GTK_BOX(page_prior), tcu_label);
-    gtk_box_append(GTK_BOX(page_prior), state->prior_tcu_entry);
+    gtk_box_append(GTK_BOX(tcu_box), tcu_label);
+    gtk_box_append(GTK_BOX(tcu_box), state->prior_tcu_entry);
+    gtk_box_append(GTK_BOX(page_prior), tcu_box);
 
-    state->zero_check = gtk_check_button_new_with_label("Start from zero (no prior history)");
+    state->zero_check = gtk_check_button_new_with_label("Start from zero (no prior course history)");
     g_signal_connect(state->zero_check, "toggled", G_CALLBACK(on_wizard_zero_toggled), state);
     gtk_box_append(GTK_BOX(page_prior), state->zero_check);
 
@@ -327,7 +359,7 @@ GtkWidget *gg_first_run_wizard_create(GtkWindow *parent, GGAppContext *ctx, GCal
     gtk_widget_set_margin_top(prior_buttons_box, 16);
     GtkWidget *back_btn = gtk_button_new_with_label("Back");
     g_signal_connect(back_btn, "clicked", G_CALLBACK(on_wizard_back_clicked), state);
-    state->finish_button = gtk_button_new_with_label("Finish");
+    state->finish_button = gtk_button_new_with_label("Finish Setup");
     gtk_widget_add_css_class(state->finish_button, "suggested-action");
     g_signal_connect(state->finish_button, "clicked", G_CALLBACK(on_wizard_finish_clicked), state);
     gtk_box_append(GTK_BOX(prior_buttons_box), back_btn);

@@ -386,12 +386,32 @@ GtkWidget *gg_settings_widget_create(GGAppContext *ctx) {
     gtk_widget_set_halign(title, GTK_ALIGN_START);
     gtk_box_append(GTK_BOX(state->container), title);
 
-    GtkWidget *scale_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
+    GtkWidget *scale_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_widget_add_css_class(scale_card, "card");
     GtkWidget *scale_title = gtk_label_new("Grading Scale Configuration");
     gtk_widget_add_css_class(scale_title, "title-3");
     gtk_widget_set_halign(scale_title, GTK_ALIGN_START);
+    GtkWidget *scale_sub = gtk_label_new("Define letter grade symbols and their numerical point values (e.g. A = 5.00)");
+    gtk_widget_add_css_class(scale_sub, "card-subtitle");
+    gtk_widget_set_halign(scale_sub, GTK_ALIGN_START);
     gtk_box_append(GTK_BOX(scale_card), scale_title);
+    gtk_box_append(GTK_BOX(scale_card), scale_sub);
+
+    GtkWidget *scale_table_hdr = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
+    gtk_widget_add_css_class(scale_table_hdr, "data-table-header");
+    GtkWidget *th_sym = gtk_label_new("GRADE SYMBOL");
+    gtk_widget_set_halign(th_sym, GTK_ALIGN_START);
+    gtk_widget_set_hexpand(th_sym, TRUE);
+    GtkWidget *th_pts = gtk_label_new("POINT VALUE");
+    gtk_widget_set_halign(th_pts, GTK_ALIGN_START);
+    gtk_widget_set_hexpand(th_pts, TRUE);
+    GtkWidget *th_act = gtk_label_new("ACTIONS");
+    gtk_widget_set_halign(th_act, GTK_ALIGN_CENTER);
+    gtk_widget_set_size_request(th_act, 80, -1);
+    gtk_box_append(GTK_BOX(scale_table_hdr), th_sym);
+    gtk_box_append(GTK_BOX(scale_table_hdr), th_pts);
+    gtk_box_append(GTK_BOX(scale_table_hdr), th_act);
+    gtk_box_append(GTK_BOX(scale_card), scale_table_hdr);
 
     state->scale_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
     gtk_box_append(GTK_BOX(scale_card), state->scale_box);
@@ -412,12 +432,17 @@ GtkWidget *gg_settings_widget_create(GGAppContext *ctx) {
     gtk_box_append(GTK_BOX(scale_card), state->save_scale_btn);
     gtk_box_append(GTK_BOX(state->container), scale_card);
 
-    GtkWidget *export_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
+    GtkWidget *export_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_widget_add_css_class(export_card, "card");
     GtkWidget *export_title = gtk_label_new("Data Export & Archive");
     gtk_widget_add_css_class(export_title, "title-3");
     gtk_widget_set_halign(export_title, GTK_ALIGN_START);
+    GtkWidget *export_sub =
+        gtk_label_new("Generate portable spreadsheet archives or official printable PDF transcripts");
+    gtk_widget_add_css_class(export_sub, "card-subtitle");
+    gtk_widget_set_halign(export_sub, GTK_ALIGN_START);
     gtk_box_append(GTK_BOX(export_card), export_title);
+    gtk_box_append(GTK_BOX(export_card), export_sub);
 
     GtkWidget *export_btns_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
     GtkWidget *export_xlsx_btn = gtk_button_new_with_label("Export Spreadsheet (.xlsx)");
@@ -429,12 +454,17 @@ GtkWidget *gg_settings_widget_create(GGAppContext *ctx) {
     gtk_box_append(GTK_BOX(export_card), export_btns_box);
     gtk_box_append(GTK_BOX(state->container), export_card);
 
-    GtkWidget *import_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
+    GtkWidget *import_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_widget_add_css_class(import_card, "card");
     GtkWidget *import_title = gtk_label_new("Data Import & Restore");
     gtk_widget_add_css_class(import_title, "title-3");
     gtk_widget_set_halign(import_title, GTK_ALIGN_START);
+    GtkWidget *import_sub =
+        gtk_label_new("Restore course records and grading scales from an existing GradeGoal Excel workbook");
+    gtk_widget_add_css_class(import_sub, "card-subtitle");
+    gtk_widget_set_halign(import_sub, GTK_ALIGN_START);
     gtk_box_append(GTK_BOX(import_card), import_title);
+    gtk_box_append(GTK_BOX(import_card), import_sub);
 
     GtkWidget *import_btn = gtk_button_new_with_label("Import Backup Spreadsheet (.xlsx)");
     gtk_widget_add_css_class(import_btn, "suggested-action");
@@ -443,12 +473,17 @@ GtkWidget *gg_settings_widget_create(GGAppContext *ctx) {
     gtk_box_append(GTK_BOX(import_card), import_btn);
     gtk_box_append(GTK_BOX(state->container), import_card);
 
-    GtkWidget *backup_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
+    GtkWidget *backup_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_widget_add_css_class(backup_card, "card");
     GtkWidget *backup_title = gtk_label_new("Automatic Rolling Backup Status");
     gtk_widget_add_css_class(backup_title, "title-3");
     gtk_widget_set_halign(backup_title, GTK_ALIGN_START);
+    GtkWidget *backup_sub =
+        gtk_label_new("Local SQLite snapshots are automatically captured before every mutation (retaining 5 FIFO files)");
+    gtk_widget_add_css_class(backup_sub, "card-subtitle");
+    gtk_widget_set_halign(backup_sub, GTK_ALIGN_START);
     gtk_box_append(GTK_BOX(backup_card), backup_title);
+    gtk_box_append(GTK_BOX(backup_card), backup_sub);
 
     state->backup_status_label = gtk_label_new("Checking backup status...");
     gtk_widget_set_halign(state->backup_status_label, GTK_ALIGN_START);

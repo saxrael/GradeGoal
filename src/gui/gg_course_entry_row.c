@@ -39,6 +39,8 @@ GGCourseEntryRow *gg_course_entry_row_create(const GGGradingScale *scale, const 
     }
 
     row->remove_button = gtk_button_new_with_label("Remove");
+    gtk_widget_add_css_class(row->remove_button, "action-btn-sm");
+    gtk_widget_add_css_class(row->remove_button, "destructive-action");
     row->unit_error_label = gtk_label_new("");
     gtk_widget_add_css_class(row->unit_error_label, "error");
 

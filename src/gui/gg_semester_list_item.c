@@ -17,6 +17,23 @@ static void on_item_action_clicked(GtkButton *button, gpointer user_data) {
     }
 }
 
+static const char *get_grade_badge_class(const char *symbol) {
+    if (symbol == NULL || symbol[0] == '\0') {
+        return "badge";
+    }
+    char c = symbol[0];
+    if (c == 'A' || c == 'a') {
+        return "badge-grade-a";
+    } else if (c == 'B' || c == 'b') {
+        return "badge-grade-b";
+    } else if (c == 'C' || c == 'c') {
+        return "badge-grade-c";
+    } else if (c == 'D' || c == 'd') {
+        return "badge-grade-d";
+    }
+    return "badge-grade-f";
+}
+
 GGSemesterListItem *gg_semester_list_item_create(const char *semester_label, const GGCourseList *courses,
                                                  const GGGradingScale *scale, GCallback on_edit_course,
                                                  GCallback on_delete_course, gpointer user_data) {
@@ -63,21 +80,31 @@ GGSemesterListItem *gg_semester_list_item_create(const char *semester_label, con
     if (courses != NULL) {
         for (size_t i = 0; i < courses->count; i++) {
             if (semester_label != NULL && strcmp(courses->entries[i].semester_label, semester_label) == 0) {
-                GtkWidget *row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
-                gtk_widget_set_margin_top(row, 2);
-                gtk_widget_set_margin_bottom(row, 2);
+                GtkWidget *row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
+                gtk_widget_set_margin_top(row, 4);
+                gtk_widget_set_margin_bottom(row, 4);
+                gtk_widget_add_css_class(row, "data-table-row");
 
-                char course_line[128];
-                snprintf(course_line, sizeof(course_line), "• %s (%u units) — Grade: %s",
-                         courses->entries[i].course_label[0] != '\0' ? courses->entries[i].course_label : "Course",
-                         courses->entries[i].credit_unit, courses->entries[i].grade_symbol);
-                GtkWidget *lbl = gtk_label_new(course_line);
-                gtk_widget_set_halign(lbl, GTK_ALIGN_START);
-                gtk_widget_set_hexpand(lbl, TRUE);
-                gtk_box_append(GTK_BOX(row), lbl);
+                GtkWidget *lbl_code = gtk_label_new(
+                    courses->entries[i].course_label[0] != '\0' ? courses->entries[i].course_label : "Course");
+                gtk_widget_set_halign(lbl_code, GTK_ALIGN_START);
+                gtk_widget_set_hexpand(lbl_code, TRUE);
+
+                char unit_buf[32];
+                snprintf(unit_buf, sizeof(unit_buf), "%u units", courses->entries[i].credit_unit);
+                GtkWidget *lbl_unit = gtk_label_new(unit_buf);
+                gtk_widget_add_css_class(lbl_unit, "dim-label");
+
+                GtkWidget *lbl_grade = gtk_label_new(courses->entries[i].grade_symbol);
+                gtk_widget_add_css_class(lbl_grade, get_grade_badge_class(courses->entries[i].grade_symbol));
+
+                gtk_box_append(GTK_BOX(row), lbl_code);
+                gtk_box_append(GTK_BOX(row), lbl_unit);
+                gtk_box_append(GTK_BOX(row), lbl_grade);
 
                 if (on_edit_course != NULL) {
                     GtkWidget *edit_btn = gtk_button_new_with_label("Edit");
+                    gtk_widget_add_css_class(edit_btn, "action-btn-sm");
                     GGItemActionData *act_edit = (GGItemActionData *)calloc(1, sizeof(GGItemActionData));
                     if (act_edit != NULL) {
                         act_edit->course_id = courses->entries[i].id;
@@ -91,6 +118,7 @@ GGSemesterListItem *gg_semester_list_item_create(const char *semester_label, con
 
                 if (on_delete_course != NULL) {
                     GtkWidget *del_btn = gtk_button_new_with_label("Delete");
+                    gtk_widget_add_css_class(del_btn, "action-btn-sm");
                     gtk_widget_add_css_class(del_btn, "destructive-action");
                     GGItemActionData *act_del = (GGItemActionData *)calloc(1, sizeof(GGItemActionData));
                     if (act_del != NULL) {

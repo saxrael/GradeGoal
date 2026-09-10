@@ -31,6 +31,8 @@ GGGradeRow *gg_grade_row_create(const GGGradeItem *initial_item, GCallback on_ch
     }
 
     row->remove_button = gtk_button_new_with_label("Remove");
+    gtk_widget_add_css_class(row->remove_button, "action-btn-sm");
+    gtk_widget_add_css_class(row->remove_button, "destructive-action");
     row->error_label = gtk_label_new("");
     gtk_widget_add_css_class(row->error_label, "error");
 

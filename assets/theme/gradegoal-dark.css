@@ -1,80 +1,79 @@
-window {
-    background-color: #0B1026;
-    color: #F0F4FF;
+﻿window {
+    background-color: #0B0F19;
+    color: #F8FAFC;
     font-family: "Plus Jakarta Sans", sans-serif;
     font-size: 14px;
 }
 
 headerbar {
-    background-color: #070B1B;
-    color: #F0F4FF;
-    border-bottom: 2px solid rgba(253, 174, 58, 0.40);
-    padding: 6px 12px;
+    background-color: #111827;
+    color: #F8FAFC;
+    border-bottom: 1px solid #1F2937;
+    padding: 8px 16px;
 }
 
 headerbar label.title {
     font-family: "Source Serif 4", serif;
     font-weight: 600;
     font-size: 18px;
-    color: #FDAE3A;
+    color: #F8FAFC;
 }
 
 headerbar button {
-    background-color: #141E43;
-    color: #F0F4FF;
-    border: 1px solid rgba(253, 174, 58, 0.35);
+    background-color: #1F2937;
+    color: #F1F5F9;
+    border: 1px solid #374151;
     border-radius: 6px;
 }
 
 headerbar button:hover {
-    background-color: #1E2D66;
-    border-color: #FDAE3A;
+    background-color: #374151;
+    border-color: #4B5563;
 }
 
 headerbar button:checked,
 headerbar button:active {
-    background-color: #FDAE3A;
-    color: #070B1B;
-    font-weight: 700;
+    background-color: #2563EB;
+    color: #FFFFFF;
+    font-weight: 600;
 }
 
 headerbar windowcontrols button {
     background-color: transparent;
     border: none;
-    color: #F0F4FF;
+    color: #94A3B8;
 }
 
 headerbar windowcontrols button:hover {
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.10);
 }
 
 stackswitcher {
-    background-color: #03050F;
-    border: 1px solid rgba(253, 174, 58, 0.35);
+    background-color: #1F2937;
+    border: 1px solid #374151;
     border-radius: 8px;
     padding: 3px;
 }
 
 stackswitcher button {
-    background-color: #141E43;
-    color: #F0F4FF;
+    background-color: transparent;
+    color: #94A3B8;
     font-family: "Plus Jakarta Sans", sans-serif;
     font-weight: 600;
     font-size: 13px;
-    border: 1px solid rgba(253, 174, 58, 0.20);
+    border: none;
     border-radius: 6px;
     padding: 6px 16px;
-    margin: 1px 2px;
+    margin: 0 1px;
 }
 
 stackswitcher button label {
-    color: #F0F4FF;
+    color: #94A3B8;
     font-weight: 600;
 }
 
 stackswitcher button:hover {
-    background-color: #1E2D66;
-    border-color: #FDAE3A;
+    background-color: rgba(255, 255, 255, 0.08);
     color: #FFFFFF;
 }
 
@@ -84,16 +83,16 @@ stackswitcher button:hover label {
 
 stackswitcher button:checked,
 stackswitcher button:active {
-    background-color: #FDAE3A;
-    color: #070B1B;
+    background-color: #111827;
+    color: #60A5FA;
     font-weight: 700;
-    border: 1px solid #FDAE3A;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.40);
+    border: 1px solid #374151;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.40);
 }
 
 stackswitcher button:checked label,
 stackswitcher button:active label {
-    color: #070B1B;
+    color: #60A5FA;
     font-weight: 700;
 }
 
@@ -101,8 +100,8 @@ stackswitcher button:active label {
     font-family: "Source Serif 4", serif;
     font-weight: 600;
     font-size: 24px;
-    color: #FDAE3A;
-    margin-bottom: 8px;
+    color: #F8FAFC;
+    margin-bottom: 4px;
 }
 
 .serif-title {
@@ -113,120 +112,265 @@ stackswitcher button:active label {
 .cgpa-large-number {
     font-family: "Source Serif 4", serif;
     font-weight: 600;
-    font-size: 42px;
-    color: #FDAE3A;
+    font-size: 38px;
+    color: #F8FAFC;
 }
 
 .card {
-    padding: 16px;
-    border-radius: 10px;
-    background-color: #121A3B;
-    margin: 6px;
-    border: 1px solid rgba(253, 174, 58, 0.18);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    padding: 16px 20px;
+    border-radius: 12px;
+    background-color: #111827;
+    margin: 4px 0;
+    border: 1px solid #1F2937;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.30);
+}
+
+.metric-card {
+    padding: 16px 20px;
+    border-radius: 12px;
+    background-color: #111827;
+    margin: 4px;
+    border: 1px solid #1F2937;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.30);
+}
+
+.metric-card:hover {
+    border-color: #374151;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.40);
 }
 
 .accent-cgpa {
-    border-left: 5px solid #FDAE3A;
+    border-top: 3px solid #3B82F6;
 }
 
 .accent-tcp {
-    border-left: 5px solid #4C6EF5;
+    border-top: 3px solid #6366F1;
 }
 
 .accent-tcu {
-    border-left: 5px solid #748FFC;
+    border-top: 3px solid #38BDF8;
 }
 
 .accent-standing {
-    border-left: 5px solid #FDAE3A;
+    border-top: 3px solid #F59E0B;
 }
 
 .accent-success {
-    border-left: 5px solid #22C55E;
-    background-color: rgba(34, 197, 94, 0.15);
+    border-left: 4px solid #10B981;
+    border: 1px solid rgba(16, 185, 129, 0.30);
+    background-color: rgba(16, 185, 129, 0.10);
 }
 
 .accent-warning {
-    border-left: 5px solid #F59E0B;
-    background-color: rgba(245, 158, 11, 0.15);
+    border-left: 4px solid #F59E0B;
+    border: 1px solid rgba(245, 158, 11, 0.30);
+    background-color: rgba(245, 158, 11, 0.10);
 }
 
 .accent-info {
-    border-left: 5px solid #60A5FA;
-    background-color: rgba(96, 165, 250, 0.12);
+    border-left: 4px solid #3B82F6;
+    border: 1px solid rgba(59, 130, 246, 0.30);
+    background-color: rgba(59, 130, 246, 0.10);
 }
 
 button {
     font-family: "Plus Jakarta Sans", sans-serif;
-    font-weight: 500;
-    border-radius: 6px;
-    padding: 6px 14px;
-    background-color: #162047;
-    color: #F0F4FF;
-    border: 1px solid rgba(253, 174, 58, 0.30);
+    font-weight: 600;
+    font-size: 13px;
+    border-radius: 8px;
+    padding: 8px 16px;
+    background-color: #1F2937;
+    color: #F1F5F9;
+    border: 1px solid #374151;
 }
 
 button:hover {
-    background-color: #202D62;
-    border-color: #FDAE3A;
+    background-color: #374151;
+    border-color: #4B5563;
+    color: #FFFFFF;
+}
+
+button:active {
+    background-color: #111827;
 }
 
 button.suggested-action {
-    background-color: #FDAE3A;
-    color: #070B1B;
+    background-color: #2563EB;
+    color: #FFFFFF;
+    border: 1px solid #3B82F6;
     font-weight: 600;
-    border: 1px solid #FDAE3A;
 }
 
 button.suggested-action:hover {
-    background-color: #FBBF24;
-    border-color: #FBBF24;
+    background-color: #1D4ED8;
+    border-color: #2563EB;
 }
 
 button.accent-cta {
-    background-color: #FDAE3A;
-    color: #070B1B;
+    background-color: #D97706;
+    color: #FFFFFF;
     font-weight: 600;
-    border: 1px solid #FDAE3A;
+    border: 1px solid #F59E0B;
 }
 
 button.accent-cta:hover {
-    background-color: #FBBF24;
+    background-color: #B45309;
 }
 
 button.destructive-action {
-    background-color: #EF4444;
-    color: #FFFFFF;
-    border: 1px solid #EF4444;
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #F87171;
+    border: 1px solid rgba(239, 68, 68, 0.30);
     font-weight: 600;
 }
 
 button.destructive-action:hover {
     background-color: #DC2626;
-    border-color: #DC2626;
+    color: #FFFFFF;
+    border-color: #EF4444;
+}
+
+button.action-btn-sm {
+    padding: 5px 12px;
+    font-size: 12px;
+    border-radius: 6px;
 }
 
 dropdown,
 dropdown > button {
-    background-color: #162047;
-    color: #F0F4FF;
-    border: 1px solid rgba(253, 174, 58, 0.25);
-    border-radius: 6px;
+    background-color: #1F2937;
+    color: #F8FAFC;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+dropdown > button:hover {
+    background-color: #374151;
+    border-color: #4B5563;
 }
 
 entry,
 spinbutton {
-    background-color: #162047;
-    color: #F0F4FF;
-    border: 1px solid rgba(253, 174, 58, 0.25);
-    border-radius: 6px;
-    padding: 6px 10px;
+    background-color: #1F2937;
+    color: #F8FAFC;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
 }
 
 entry:focus,
 spinbutton:focus {
-    border: 2px solid #FDAE3A;
+    border: 2px solid #3B82F6;
+    outline: none;
+}
+
+.form-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #94A3B8;
+    margin-bottom: 3px;
+}
+
+.data-table-container {
+    background-color: #111827;
+    border: 1px solid #1F2937;
+    border-radius: 10px;
+}
+
+.data-table-header {
+    background-color: #1A2234;
+    border-bottom: 1px solid #1F2937;
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #94A3B8;
+}
+
+.data-table-row {
+    border-bottom: 1px solid #1F2937;
+    padding: 8px 16px;
+}
+
+.data-table-row:hover {
+    background-color: #1E293B;
+}
+
+.badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 9999px;
+}
+
+.badge-grade-a {
+    background-color: rgba(16, 185, 129, 0.20);
+    color: #34D399;
+    border: 1px solid rgba(16, 185, 129, 0.40);
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 9999px;
+}
+
+.badge-grade-b {
+    background-color: rgba(56, 189, 248, 0.20);
+    color: #38BDF8;
+    border: 1px solid rgba(56, 189, 248, 0.40);
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 9999px;
+}
+
+.badge-grade-c {
+    background-color: rgba(99, 102, 241, 0.20);
+    color: #818CF8;
+    border: 1px solid rgba(99, 102, 241, 0.40);
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 9999px;
+}
+
+.badge-grade-d {
+    background-color: rgba(245, 158, 11, 0.20);
+    color: #FBBF24;
+    border: 1px solid rgba(245, 158, 11, 0.40);
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 9999px;
+}
+
+.badge-grade-f {
+    background-color: rgba(239, 68, 68, 0.20);
+    color: #F87171;
+    border: 1px solid rgba(239, 68, 68, 0.40);
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 9999px;
+}
+
+.metric-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #94A3B8;
+}
+
+.metric-sub {
+    font-size: 11px;
+    font-weight: 500;
+    color: #64748B;
+}
+
+.empty-state-card {
+    padding: 36px 24px;
+    background-color: #111827;
+    border: 1px dashed #374151;
+    border-radius: 12px;
 }
 
 .error {
@@ -236,12 +380,13 @@ spinbutton:focus {
 }
 
 .dim-label {
-    color: rgba(240, 244, 255, 0.65);
+    color: #94A3B8;
+    font-size: 13px;
 }
 
 .highlight-badge {
-    background-color: #FFDB2F;
-    color: #070B1B;
+    background-color: rgba(245, 158, 11, 0.25);
+    color: #FBBF24;
     font-weight: 700;
     padding: 2px 8px;
     border-radius: 12px;

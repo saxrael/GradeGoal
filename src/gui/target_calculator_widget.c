@@ -18,6 +18,23 @@ typedef struct {
     size_t row_count;
 } GGTargetCalculatorState;
 
+static const char *get_grade_badge_class(const char *symbol) {
+    if (symbol == NULL || symbol[0] == '\0') {
+        return "badge";
+    }
+    char c = symbol[0];
+    if (c == 'A' || c == 'a') {
+        return "badge-grade-a";
+    } else if (c == 'B' || c == 'b') {
+        return "badge-grade-b";
+    } else if (c == 'C' || c == 'c') {
+        return "badge-grade-c";
+    } else if (c == 'D' || c == 'd') {
+        return "badge-grade-d";
+    }
+    return "badge-grade-f";
+}
+
 static void on_remove_upcoming_row(gpointer data) {
     GGCourseEntryRow *target_row = (GGCourseEntryRow *)data;
     if (target_row == NULL || target_row->container == NULL) {
@@ -142,6 +159,7 @@ static void on_calculate_clicked(GtkButton *button, gpointer user_data) {
     } else if (result.branch == GG_SOLVER_ALREADY_GUARANTEED) {
         gtk_widget_add_css_class(state->result_card, "accent-success");
         gtk_label_set_text(GTK_LABEL(state->result_title_label), "Target Already Guaranteed");
+
         char detail[128];
         snprintf(detail, sizeof(detail),
                  "Your target CGPA of %.2f is already assured regardless of upcoming grades!\nFloor outcome (all "
@@ -150,14 +168,34 @@ static void on_calculate_clicked(GtkButton *button, gpointer user_data) {
         gtk_label_set_text(GTK_LABEL(state->result_detail_label), detail);
 
         for (size_t i = 0; i < result.assignment_count; i++) {
-            char row_str[128];
-            snprintf(row_str, sizeof(row_str), "• %s (%u units)  —  Assigned Grade: %s (%.1f)",
-                     result.assignments[i].course_label[0] != '\0' ? result.assignments[i].course_label : "Course",
-                     result.assignments[i].credit_unit, result.assignments[i].assigned_grade,
-                     result.assignments[i].grade_point);
-            GtkWidget *lbl = gtk_label_new(row_str);
-            gtk_widget_set_halign(lbl, GTK_ALIGN_START);
-            gtk_box_append(GTK_BOX(state->assignments_box), lbl);
+            GtkWidget *row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
+            gtk_widget_set_margin_top(row, 2);
+            gtk_widget_set_margin_bottom(row, 2);
+
+            GtkWidget *lbl_course = gtk_label_new(
+                result.assignments[i].course_label[0] != '\0' ? result.assignments[i].course_label : "Upcoming Course");
+            gtk_widget_set_halign(lbl_course, GTK_ALIGN_START);
+            gtk_widget_set_hexpand(lbl_course, TRUE);
+
+            char u_buf[32];
+            snprintf(u_buf, sizeof(u_buf), "%u units", result.assignments[i].credit_unit);
+            GtkWidget *lbl_u = gtk_label_new(u_buf);
+            gtk_widget_add_css_class(lbl_u, "dim-label");
+
+            char pt_buf[32];
+            snprintf(pt_buf, sizeof(pt_buf), "%.1f pts", result.assignments[i].grade_point);
+            GtkWidget *lbl_pt = gtk_label_new(pt_buf);
+            gtk_widget_add_css_class(lbl_pt, "dim-label");
+
+            GtkWidget *lbl_grd = gtk_label_new(result.assignments[i].assigned_grade);
+            gtk_widget_add_css_class(lbl_grd, get_grade_badge_class(result.assignments[i].assigned_grade));
+
+            gtk_box_append(GTK_BOX(row), lbl_course);
+            gtk_box_append(GTK_BOX(row), lbl_u);
+            gtk_box_append(GTK_BOX(row), lbl_pt);
+            gtk_box_append(GTK_BOX(row), lbl_grd);
+
+            gtk_box_append(GTK_BOX(state->assignments_box), row);
         }
     } else if (result.branch == GG_SOLVER_REACHABLE_WITH_EFFORT) {
         gtk_widget_add_css_class(state->result_card, "accent-info");
@@ -169,14 +207,34 @@ static void on_calculate_clicked(GtkButton *button, gpointer user_data) {
         gtk_label_set_text(GTK_LABEL(state->result_detail_label), detail);
 
         for (size_t i = 0; i < result.assignment_count; i++) {
-            char row_str[128];
-            snprintf(row_str, sizeof(row_str), "• %s (%u units)  —  Needed Grade: %s (%.1f)",
-                     result.assignments[i].course_label[0] != '\0' ? result.assignments[i].course_label : "Course",
-                     result.assignments[i].credit_unit, result.assignments[i].assigned_grade,
-                     result.assignments[i].grade_point);
-            GtkWidget *lbl = gtk_label_new(row_str);
-            gtk_widget_set_halign(lbl, GTK_ALIGN_START);
-            gtk_box_append(GTK_BOX(state->assignments_box), lbl);
+            GtkWidget *row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
+            gtk_widget_set_margin_top(row, 2);
+            gtk_widget_set_margin_bottom(row, 2);
+
+            GtkWidget *lbl_course = gtk_label_new(
+                result.assignments[i].course_label[0] != '\0' ? result.assignments[i].course_label : "Upcoming Course");
+            gtk_widget_set_halign(lbl_course, GTK_ALIGN_START);
+            gtk_widget_set_hexpand(lbl_course, TRUE);
+
+            char u_buf[32];
+            snprintf(u_buf, sizeof(u_buf), "%u units", result.assignments[i].credit_unit);
+            GtkWidget *lbl_u = gtk_label_new(u_buf);
+            gtk_widget_add_css_class(lbl_u, "dim-label");
+
+            char pt_buf[32];
+            snprintf(pt_buf, sizeof(pt_buf), "%.1f pts", result.assignments[i].grade_point);
+            GtkWidget *lbl_pt = gtk_label_new(pt_buf);
+            gtk_widget_add_css_class(lbl_pt, "dim-label");
+
+            GtkWidget *lbl_grd = gtk_label_new(result.assignments[i].assigned_grade);
+            gtk_widget_add_css_class(lbl_grd, get_grade_badge_class(result.assignments[i].assigned_grade));
+
+            gtk_box_append(GTK_BOX(row), lbl_course);
+            gtk_box_append(GTK_BOX(row), lbl_u);
+            gtk_box_append(GTK_BOX(row), lbl_pt);
+            gtk_box_append(GTK_BOX(row), lbl_grd);
+
+            gtk_box_append(GTK_BOX(state->assignments_box), row);
         }
     }
 
@@ -201,41 +259,98 @@ GtkWidget *gg_target_calculator_widget_create(GGAppContext *ctx) {
     gtk_widget_set_halign(title, GTK_ALIGN_START);
     gtk_box_append(GTK_BOX(state->container), title);
 
-    GtkWidget *target_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
-    gtk_widget_add_css_class(target_box, "card");
+    GtkWidget *target_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_widget_add_css_class(target_card, "card");
 
-    GtkWidget *target_prompt = gtk_label_new("Target CGPA:");
+    GtkWidget *target_header = gtk_label_new("Target CGPA Goal");
+    gtk_widget_add_css_class(target_header, "title-3");
+    gtk_widget_set_halign(target_header, GTK_ALIGN_START);
+
+    GtkWidget *target_subtitle =
+        gtk_label_new("Enter your desired cumulative grade point average (Scale 5.00 Max)");
+    gtk_widget_add_css_class(target_subtitle, "card-subtitle");
+    gtk_widget_set_halign(target_subtitle, GTK_ALIGN_START);
+
+    GtkWidget *target_input_row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
+    gtk_widget_set_margin_top(target_input_row, 4);
+
+    GtkWidget *target_field_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+    GtkWidget *target_lbl = gtk_label_new("Target CGPA");
+    gtk_widget_add_css_class(target_lbl, "form-label");
+    gtk_widget_set_halign(target_lbl, GTK_ALIGN_START);
+
     state->target_entry = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(state->target_entry), "e.g. 4.20");
-    gtk_widget_set_size_request(state->target_entry, 120, -1);
+    gtk_widget_set_size_request(state->target_entry, 160, -1);
+
+    gtk_box_append(GTK_BOX(target_field_box), target_lbl);
+    gtk_box_append(GTK_BOX(target_field_box), state->target_entry);
 
     GtkWidget *calc_btn = gtk_button_new_with_label("Calculate Required Grades");
     gtk_widget_add_css_class(calc_btn, "suggested-action");
+    gtk_widget_set_valign(calc_btn, GTK_ALIGN_END);
     g_signal_connect(calc_btn, "clicked", G_CALLBACK(on_calculate_clicked), state);
 
-    gtk_box_append(GTK_BOX(target_box), target_prompt);
-    gtk_box_append(GTK_BOX(target_box), state->target_entry);
-    gtk_box_append(GTK_BOX(target_box), calc_btn);
-    gtk_box_append(GTK_BOX(state->container), target_box);
+    gtk_box_append(GTK_BOX(target_input_row), target_field_box);
+    gtk_box_append(GTK_BOX(target_input_row), calc_btn);
+
+    gtk_box_append(GTK_BOX(target_card), target_header);
+    gtk_box_append(GTK_BOX(target_card), target_subtitle);
+    gtk_box_append(GTK_BOX(target_card), target_input_row);
+    gtk_box_append(GTK_BOX(state->container), target_card);
+
+    GtkWidget *courses_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_widget_add_css_class(courses_card, "card");
 
     GtkWidget *section_header = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
+    GtkWidget *courses_title_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
+    gtk_widget_set_hexpand(courses_title_box, TRUE);
+
     GtkWidget *courses_title = gtk_label_new("Upcoming Courses to Take");
     gtk_widget_add_css_class(courses_title, "title-3");
     gtk_widget_set_halign(courses_title, GTK_ALIGN_START);
-    gtk_widget_set_hexpand(courses_title, TRUE);
+
+    GtkWidget *courses_sub =
+        gtk_label_new("Add the courses and credit units you plan to register for in upcoming semesters");
+    gtk_widget_add_css_class(courses_sub, "card-subtitle");
+    gtk_widget_set_halign(courses_sub, GTK_ALIGN_START);
+
+    gtk_box_append(GTK_BOX(courses_title_box), courses_title);
+    gtk_box_append(GTK_BOX(courses_title_box), courses_sub);
 
     GtkWidget *add_btn = gtk_button_new_with_label("+ Add Course");
+    gtk_widget_set_valign(add_btn, GTK_ALIGN_START);
     g_signal_connect(add_btn, "clicked", G_CALLBACK(on_add_upcoming_clicked), state);
 
-    gtk_box_append(GTK_BOX(section_header), courses_title);
+    gtk_box_append(GTK_BOX(section_header), courses_title_box);
     gtk_box_append(GTK_BOX(section_header), add_btn);
-    gtk_box_append(GTK_BOX(state->container), section_header);
+    gtk_box_append(GTK_BOX(courses_card), section_header);
+
+    GtkWidget *table_header = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
+    gtk_widget_add_css_class(table_header, "data-table-header");
+
+    GtkWidget *th_code = gtk_label_new("COURSE CODE / LABEL");
+    gtk_widget_set_halign(th_code, GTK_ALIGN_START);
+    gtk_widget_set_hexpand(th_code, TRUE);
+
+    GtkWidget *th_units = gtk_label_new("UNITS");
+    gtk_widget_set_halign(th_units, GTK_ALIGN_CENTER);
+    gtk_widget_set_size_request(th_units, 100, -1);
+
+    GtkWidget *th_act = gtk_label_new("ACTIONS");
+    gtk_widget_set_halign(th_act, GTK_ALIGN_CENTER);
+    gtk_widget_set_size_request(th_act, 80, -1);
+
+    gtk_box_append(GTK_BOX(table_header), th_code);
+    gtk_box_append(GTK_BOX(table_header), th_units);
+    gtk_box_append(GTK_BOX(table_header), th_act);
+    gtk_box_append(GTK_BOX(courses_card), table_header);
 
     GtkWidget *scroll = gtk_scrolled_window_new();
     gtk_widget_set_size_request(scroll, -1, 180);
     state->courses_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
     gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scroll), state->courses_box);
-    gtk_box_append(GTK_BOX(state->container), scroll);
+    gtk_box_append(GTK_BOX(courses_card), scroll);
 
     for (int i = 0; i < 3; i++) {
         GGCourseEntry initial;
@@ -248,7 +363,9 @@ GtkWidget *gg_target_calculator_widget_create(GGAppContext *ctx) {
         state->row_count++;
     }
 
-    state->result_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
+    gtk_box_append(GTK_BOX(state->container), courses_card);
+
+    state->result_card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_widget_add_css_class(state->result_card, "card");
     gtk_widget_set_visible(state->result_card, FALSE);
 
@@ -257,10 +374,11 @@ GtkWidget *gg_target_calculator_widget_create(GGAppContext *ctx) {
     gtk_widget_set_halign(state->result_title_label, GTK_ALIGN_START);
 
     state->result_detail_label = gtk_label_new("");
+    gtk_widget_add_css_class(state->result_detail_label, "card-subtitle");
     gtk_widget_set_halign(state->result_detail_label, GTK_ALIGN_START);
 
     state->assignments_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
-    gtk_widget_set_margin_start(state->assignments_box, 16);
+    gtk_widget_set_margin_start(state->assignments_box, 8);
 
     gtk_box_append(GTK_BOX(state->result_card), state->result_title_label);
     gtk_box_append(GTK_BOX(state->result_card), state->result_detail_label);
