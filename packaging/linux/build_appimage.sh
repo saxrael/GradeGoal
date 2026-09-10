@@ -1,5 +1,12 @@
 set -e
 
+mkdir -p dist/bin dist/share/applications dist/share/icons/hicolor/256x256/apps
+cp build/bin/GradeGoal dist/bin/GradeGoal
+chmod +x dist/bin/GradeGoal
+cp platform/linux/gradegoal.desktop dist/share/applications/
+cp assets/icon/hicolor/256x256/apps/gradegoal.png dist/share/icons/hicolor/256x256/apps/
+tar -czf dist/GradeGoal_Linux_x86_64.tar.gz -C dist bin share
+
 APP_DIR="GradeGoal.AppDir"
 mkdir -p "$APP_DIR/usr/bin"
 mkdir -p "$APP_DIR/usr/share/applications"
