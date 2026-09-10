@@ -11,6 +11,19 @@ chmod +x "$APP_DIR/Contents/MacOS/GradeGoal"
 cp packaging/macos/Info.plist "$APP_DIR/Contents/Info.plist"
 cp assets/icon/icon.icns "$APP_DIR/Contents/Resources/icon.icns"
 
+if command -v dylibbundler >/dev/null 2>&1; then
+    dylibbundler -b -x "$APP_DIR/Contents/MacOS/GradeGoal" -d "$APP_DIR/Contents/libs/" -p "@executable_path/../libs/" -cd || true
+fi
+
+if command -v brew >/dev/null 2>&1; then
+    BREW_PREFIX="$(brew --prefix)"
+    if [ -d "$BREW_PREFIX/share/glib-2.0/schemas" ]; then
+        mkdir -p "$APP_DIR/Contents/Resources/share/glib-2.0/schemas"
+        cp -r "$BREW_PREFIX/share/glib-2.0/schemas/"* "$APP_DIR/Contents/Resources/share/glib-2.0/schemas/" 2>/dev/null || true
+        glib-compile-schemas "$APP_DIR/Contents/Resources/share/glib-2.0/schemas" 2>/dev/null || true
+    fi
+fi
+
 if command -v gtk-mac-bundler >/dev/null 2>&1; then
     gtk-mac-bundler packaging/macos/GradeGoal.bundle 2>/dev/null || true
 fi

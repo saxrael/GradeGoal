@@ -6,12 +6,26 @@ param(
 $ErrorActionPreference = "Stop"
 
 $MingwRoot = ""
-if (Test-Path "C:\msys64\mingw64") {
-    $MingwRoot = "C:\msys64\mingw64"
-} elseif (Test-Path "D:\a\_temp\msys64\mingw64") {
-    $MingwRoot = "D:\a\_temp\msys64\mingw64"
-} elseif ($env:MINGW_PREFIX -and (Test-Path $env:MINGW_PREFIX)) {
-    $MingwRoot = $env:MINGW_PREFIX
+$PossibleRoots = @(
+    $env:MINGW_PREFIX,
+    "C:\msys64\mingw64",
+    "D:\a\_temp\msys64\mingw64",
+    "$env:RUNNER_TEMP\msys64\mingw64",
+    "$env:RUNNER_TEMP\_temp\msys64\mingw64",
+    "$env:LOCALAPPDATA\msys64\mingw64"
+)
+foreach ($root in $PossibleRoots) {
+    if ($root -and (Test-Path "$root\bin\libgtk-4-1.dll")) {
+        $MingwRoot = $root
+        break
+    }
+}
+
+if (-not $MingwRoot) {
+    $gtkCmd = Get-Command libgtk-4-1.dll -ErrorAction SilentlyContinue
+    if ($gtkCmd) {
+        $MingwRoot = Split-Path (Split-Path $gtkCmd.Source -Parent) -Parent
+    }
 }
 
 if ($MingwRoot -and (Test-Path "$MingwRoot\bin")) {
