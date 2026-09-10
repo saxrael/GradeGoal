@@ -531,9 +531,12 @@ GtkWidget *gg_dashboard_widget_create(GGAppContext *ctx) {
     GtkWidget *card_cgpa = create_metric_card("CURRENT CGPA", "Scale 5.00 Max", &state->cgpa_val_label, "accent-cgpa");
     gtk_widget_remove_css_class(state->cgpa_val_label, "title-1");
     gtk_widget_add_css_class(state->cgpa_val_label, "cgpa-large-number");
-    GtkWidget *card_tcp = create_metric_card("TOTAL POINTS (TCP)", "Cumulative Points", &state->tcp_val_label, "accent-tcp");
-    GtkWidget *card_tcu = create_metric_card("TOTAL UNITS (TCU)", "Registered Credits", &state->tcu_val_label, "accent-tcu");
-    GtkWidget *card_standing = create_metric_card("CLASS STANDING", "Degree Classification", &state->standing_val_label, "accent-standing");
+    GtkWidget *card_tcp =
+        create_metric_card("TOTAL POINTS (TCP)", "Cumulative Points", &state->tcp_val_label, "accent-tcp");
+    GtkWidget *card_tcu =
+        create_metric_card("TOTAL UNITS (TCU)", "Registered Credits", &state->tcu_val_label, "accent-tcu");
+    GtkWidget *card_standing =
+        create_metric_card("CLASS STANDING", "Degree Classification", &state->standing_val_label, "accent-standing");
 
     gtk_box_append(GTK_BOX(metrics_box), card_cgpa);
     gtk_box_append(GTK_BOX(metrics_box), card_tcp);
@@ -570,8 +573,8 @@ GtkWidget *gg_dashboard_widget_create(GGAppContext *ctx) {
     gtk_widget_add_css_class(empty_title, "title-3");
     gtk_widget_set_halign(empty_title, GTK_ALIGN_CENTER);
 
-    GtkWidget *empty_desc = gtk_label_new(
-        "Navigate to History or use Quick-Add Course above to enter courses and calculate your CGPA.");
+    GtkWidget *empty_desc =
+        gtk_label_new("Navigate to History or use Quick-Add Course above to enter courses and calculate your CGPA.");
     gtk_widget_add_css_class(empty_desc, "dim-label");
     gtk_widget_set_halign(empty_desc, GTK_ALIGN_CENTER);
 

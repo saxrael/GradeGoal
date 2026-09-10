@@ -391,7 +391,8 @@ GtkWidget *gg_settings_widget_create(GGAppContext *ctx) {
     GtkWidget *scale_title = gtk_label_new("Grading Scale Configuration");
     gtk_widget_add_css_class(scale_title, "title-3");
     gtk_widget_set_halign(scale_title, GTK_ALIGN_START);
-    GtkWidget *scale_sub = gtk_label_new("Define letter grade symbols and their numerical point values (e.g. A = 5.00)");
+    GtkWidget *scale_sub =
+        gtk_label_new("Define letter grade symbols and their numerical point values (e.g. A = 5.00)");
     gtk_widget_add_css_class(scale_sub, "card-subtitle");
     gtk_widget_set_halign(scale_sub, GTK_ALIGN_START);
     gtk_box_append(GTK_BOX(scale_card), scale_title);
@@ -478,8 +479,8 @@ GtkWidget *gg_settings_widget_create(GGAppContext *ctx) {
     GtkWidget *backup_title = gtk_label_new("Automatic Rolling Backup Status");
     gtk_widget_add_css_class(backup_title, "title-3");
     gtk_widget_set_halign(backup_title, GTK_ALIGN_START);
-    GtkWidget *backup_sub =
-        gtk_label_new("Local SQLite snapshots are automatically captured before every mutation (retaining 5 FIFO files)");
+    GtkWidget *backup_sub = gtk_label_new(
+        "Local SQLite snapshots are automatically captured before every mutation (retaining 5 FIFO files)");
     gtk_widget_add_css_class(backup_sub, "card-subtitle");
     gtk_widget_set_halign(backup_sub, GTK_ALIGN_START);
     gtk_box_append(GTK_BOX(backup_card), backup_title);

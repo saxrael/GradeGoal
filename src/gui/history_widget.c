@@ -637,7 +637,8 @@ GtkWidget *gg_history_widget_create(GGAppContext *ctx) {
     gtk_widget_add_css_class(empty_title, "title-3");
     gtk_widget_set_halign(empty_title, GTK_ALIGN_CENTER);
 
-    GtkWidget *empty_desc = gtk_label_new("Use the form above to add your coursework or import a backup spreadsheet from Settings.");
+    GtkWidget *empty_desc =
+        gtk_label_new("Use the form above to add your coursework or import a backup spreadsheet from Settings.");
     gtk_widget_add_css_class(empty_desc, "dim-label");
     gtk_widget_set_halign(empty_desc, GTK_ALIGN_CENTER);
 

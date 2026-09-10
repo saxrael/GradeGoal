@@ -266,8 +266,7 @@ GtkWidget *gg_target_calculator_widget_create(GGAppContext *ctx) {
     gtk_widget_add_css_class(target_header, "title-3");
     gtk_widget_set_halign(target_header, GTK_ALIGN_START);
 
-    GtkWidget *target_subtitle =
-        gtk_label_new("Enter your desired cumulative grade point average (Scale 5.00 Max)");
+    GtkWidget *target_subtitle = gtk_label_new("Enter your desired cumulative grade point average (Scale 5.00 Max)");
     gtk_widget_add_css_class(target_subtitle, "card-subtitle");
     gtk_widget_set_halign(target_subtitle, GTK_ALIGN_START);
 
