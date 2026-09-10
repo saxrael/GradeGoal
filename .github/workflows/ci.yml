@@ -105,7 +105,6 @@ jobs:
       - name: Package Windows
         if: runner.os == 'Windows'
         run: |
-          powershell -ExecutionPolicy Bypass -File packaging/windows/collect_dependencies.ps1
           New-Item -ItemType Directory -Force -Path release-package
           if (Get-Command iscc -ErrorAction SilentlyContinue) {
             iscc packaging/windows/setup.iss

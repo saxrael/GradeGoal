@@ -47,6 +47,7 @@ $DllList = @(
     "libpango-1.0-0.dll",
     "libpangocairo-1.0-0.dll",
     "libpangoft2-1.0-0.dll",
+    "libpangowin32-1.0-0.dll",
     "libcairo-2.dll",
     "libcairo-gobject-2.dll",
     "libgdk_pixbuf-2.0-0.dll",
@@ -64,7 +65,16 @@ $DllList = @(
     "libpng16-16.dll",
     "libwinpthread-1.dll",
     "libgcc_s_seh-1.dll",
-    "libstdc++-6.dll"
+    "libstdc++-6.dll",
+    "libpcre2-8-0.dll",
+    "libiconv-2.dll",
+    "libbrotlidec.dll",
+    "libbrotlicommon.dll",
+    "libbz2-1.dll",
+    "libdeflate.dll",
+    "liblzma-5.dll",
+    "libzstd.dll",
+    "libpixman-1-0.dll"
 )
 
 foreach ($dll in $DllList) {
