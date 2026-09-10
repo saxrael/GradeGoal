@@ -130,7 +130,7 @@ static void get_current_prior_standing(GGSettingsState *state, double *out_tcp, 
     }
     GGCourseList *courses = NULL;
     GGStatus st = state->ctx->course_repo->list_courses_by_semester(state->ctx->course_repo->context,
-                                                                   "Initial Standing", &courses);
+                                                                    "Initial Standing", &courses);
     if (st == GG_OK && courses != NULL) {
         for (size_t i = 0; i < courses->count; i++) {
             *out_tcu += courses->entries[i].credit_unit;
@@ -203,8 +203,8 @@ static void on_prior_standing_submit(GtkButton *button, gpointer user_data) {
     GGAppContext *ctx = dlg->settings_state->ctx;
 
     GGCourseList *initial_courses = NULL;
-    GGStatus st = ctx->course_repo->list_courses_by_semester(ctx->course_repo->context, "Initial Standing",
-                                                            &initial_courses);
+    GGStatus st =
+        ctx->course_repo->list_courses_by_semester(ctx->course_repo->context, "Initial Standing", &initial_courses);
     if (st == GG_OK && initial_courses != NULL) {
         for (size_t i = 0; i < initial_courses->count; i++) {
             ctx->course_repo->delete_course(ctx->course_repo->context, initial_courses->entries[i].id);
