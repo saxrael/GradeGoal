@@ -15,6 +15,7 @@ SetupIconFile=..\..\assets\icon\icon.ico
 Source: "..\..\dist\bin\*"; DestDir: "{app}\bin"; Flags: ignoreversion recursesubdirs
 Source: "..\..\dist\share\*"; DestDir: "{app}\share"; Flags: ignoreversion recursesubdirs skipifsourcedoesntexist
 Source: "..\..\dist\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs skipifsourcedoesntexist
+Source: "..\..\dist\etc\*"; DestDir: "{app}\etc"; Flags: ignoreversion recursesubdirs skipifsourcedoesntexist
 
 [Icons]
 Name: "{group}\GradeGoal"; Filename: "{app}\bin\GradeGoal.exe"; IconFilename: "{app}\bin\GradeGoal.exe"

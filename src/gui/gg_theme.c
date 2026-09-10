@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 #if defined(__has_include)
-#if __has_include(<fontconfig/fontconfig.h>)
+#if __has_include(<fontconfig/fontconfig.h>) && !defined(_WIN32)
 #include <fontconfig/fontconfig.h>
 #define GG_HAVE_FONTCONFIG 1
 #endif

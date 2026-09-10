@@ -61,8 +61,9 @@ GtkWidget *gg_main_window_create(GGAppContext *ctx) {
     gtk_window_set_titlebar(GTK_WINDOW(state->window), header_bar);
 
     GtkWidget *title_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
-    GtkWidget *app_icon = gtk_image_new_from_icon_name("gradegoal");
-    gtk_image_set_pixel_size(GTK_IMAGE(app_icon), 22);
+    GtkWidget *app_icon =
+        gtk_image_new_from_resource("/com/gradegoal/GradeGoal/icons/hicolor/256x256/apps/gradegoal.png");
+    gtk_image_set_pixel_size(GTK_IMAGE(app_icon), 24);
     GtkWidget *app_title = gtk_label_new("GradeGoal");
     gtk_widget_add_css_class(app_title, "title");
     gtk_box_append(GTK_BOX(title_box), app_icon);

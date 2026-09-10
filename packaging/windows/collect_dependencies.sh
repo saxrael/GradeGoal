@@ -24,6 +24,16 @@ if [ -d "/mingw64/share/icons/hicolor" ]; then
     cp -r /mingw64/share/icons/hicolor/* "$DIST_DIR/share/icons/hicolor/" 2>/dev/null || true
 fi
 
+if [ -d "assets/icon/hicolor" ]; then
+    mkdir -p "$DIST_DIR/share/icons/hicolor"
+    cp -r assets/icon/hicolor/* "$DIST_DIR/share/icons/hicolor/" 2>/dev/null || true
+fi
+
+if [ -d "/mingw64/etc/fonts" ]; then
+    mkdir -p "$DIST_DIR/etc/fonts"
+    cp -r /mingw64/etc/fonts/* "$DIST_DIR/etc/fonts/" 2>/dev/null || true
+fi
+
 if [ -d "/mingw64/lib/gdk-pixbuf-2.0" ]; then
     mkdir -p "$DIST_DIR/lib/gdk-pixbuf-2.0"
     cp -r /mingw64/lib/gdk-pixbuf-2.0/* "$DIST_DIR/lib/gdk-pixbuf-2.0/" 2>/dev/null || true

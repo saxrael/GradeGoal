@@ -20,14 +20,14 @@ headerbar label.title {
 }
 
 headerbar button {
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: #141E43;
     color: #F0F4FF;
-    border: 1px solid rgba(253, 174, 58, 0.30);
+    border: 1px solid rgba(253, 174, 58, 0.35);
     border-radius: 6px;
 }
 
 headerbar button:hover {
-    background-color: rgba(255, 255, 255, 0.16);
+    background-color: #1E2D66;
     border-color: #FDAE3A;
 }
 
@@ -35,7 +35,66 @@ headerbar button:checked,
 headerbar button:active {
     background-color: #FDAE3A;
     color: #070B1B;
+    font-weight: 700;
+}
+
+headerbar windowcontrols button {
+    background-color: transparent;
+    border: none;
+    color: #F0F4FF;
+}
+
+headerbar windowcontrols button:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+stackswitcher {
+    background-color: #03050F;
+    border: 1px solid rgba(253, 174, 58, 0.35);
+    border-radius: 8px;
+    padding: 3px;
+}
+
+stackswitcher button {
+    background-color: #141E43;
+    color: #F0F4FF;
+    font-family: "Plus Jakarta Sans", sans-serif;
     font-weight: 600;
+    font-size: 13px;
+    border: 1px solid rgba(253, 174, 58, 0.20);
+    border-radius: 6px;
+    padding: 6px 16px;
+    margin: 1px 2px;
+}
+
+stackswitcher button label {
+    color: #F0F4FF;
+    font-weight: 600;
+}
+
+stackswitcher button:hover {
+    background-color: #1E2D66;
+    border-color: #FDAE3A;
+    color: #FFFFFF;
+}
+
+stackswitcher button:hover label {
+    color: #FFFFFF;
+}
+
+stackswitcher button:checked,
+stackswitcher button:active {
+    background-color: #FDAE3A;
+    color: #070B1B;
+    font-weight: 700;
+    border: 1px solid #FDAE3A;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.40);
+}
+
+stackswitcher button:checked label,
+stackswitcher button:active label {
+    color: #070B1B;
+    font-weight: 700;
 }
 
 .screen-title {
@@ -103,6 +162,14 @@ button {
     font-weight: 500;
     border-radius: 6px;
     padding: 6px 14px;
+    background-color: #162047;
+    color: #F0F4FF;
+    border: 1px solid rgba(253, 174, 58, 0.30);
+}
+
+button:hover {
+    background-color: #202D62;
+    border-color: #FDAE3A;
 }
 
 button.suggested-action {
@@ -132,6 +199,20 @@ button.destructive-action {
     background-color: #EF4444;
     color: #FFFFFF;
     border: 1px solid #EF4444;
+    font-weight: 600;
+}
+
+button.destructive-action:hover {
+    background-color: #DC2626;
+    border-color: #DC2626;
+}
+
+dropdown,
+dropdown > button {
+    background-color: #162047;
+    color: #F0F4FF;
+    border: 1px solid rgba(253, 174, 58, 0.25);
+    border-radius: 6px;
 }
 
 entry,

@@ -17,6 +17,18 @@ static void on_app_activate(GtkApplication *app, gpointer user_data) {
     const char *db_path = "gradegoal.db";
     const char *backup_path = "backups";
 
+#ifdef _WIN32
+    gchar *pkg_dir = g_win32_get_package_installation_directory_of_module(NULL);
+    if (pkg_dir != NULL) {
+        gchar *fc_path = g_build_filename(pkg_dir, "etc", "fonts", NULL);
+        if (g_file_test(fc_path, G_FILE_TEST_IS_DIR)) {
+            g_setenv("FONTCONFIG_PATH", fc_path, TRUE);
+        }
+        g_free(fc_path);
+        g_free(pkg_dir);
+    }
+#endif
+
     gg_theme_init();
 
     GGStatus status = gg_db_connect(db_path, &g_db_conn);
@@ -77,7 +89,12 @@ static void on_app_shutdown(GApplication *app, gpointer user_data) {
 }
 
 int gg_app_run(int argc, char **argv) {
-    GtkApplication *app = gtk_application_new("com.gradegoal.GradeGoal", G_APPLICATION_DEFAULT_FLAGS);
+#ifdef _WIN32
+    GApplicationFlags flags = G_APPLICATION_NON_UNIQUE;
+#else
+    GApplicationFlags flags = G_APPLICATION_DEFAULT_FLAGS;
+#endif
+    GtkApplication *app = gtk_application_new("com.gradegoal.GradeGoal", flags);
     g_signal_connect(app, "activate", G_CALLBACK(on_app_activate), NULL);
     g_signal_connect(app, "shutdown", G_CALLBACK(on_app_shutdown), NULL);
 
