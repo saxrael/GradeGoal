@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -e
+shopt -s nullglob
 
 BUILD_DIR="${1:-build/bin}"
 DIST_DIR="${2:-dist}"
@@ -32,23 +33,24 @@ for dll in \
 done
 
 if [ -d "/mingw64/share/glib-2.0/schemas" ]; then
-    cp -r /mingw64/share/glib-2.0/schemas/* "$DIST_DIR/share/glib-2.0/schemas/"
+    mkdir -p "$DIST_DIR/share/glib-2.0/schemas"
+    cp -r /mingw64/share/glib-2.0/schemas/* "$DIST_DIR/share/glib-2.0/schemas/" 2>/dev/null || true
     if command -v glib-compile-schemas >/dev/null 2>&1; then
-        glib-compile-schemas "$DIST_DIR/share/glib-2.0/schemas"
+        glib-compile-schemas "$DIST_DIR/share/glib-2.0/schemas" 2>/dev/null || true
     fi
 fi
 
 if [ -d "/mingw64/share/icons/hicolor" ]; then
     mkdir -p "$DIST_DIR/share/icons/hicolor"
-    cp -r /mingw64/share/icons/hicolor/* "$DIST_DIR/share/icons/hicolor/"
+    cp -r /mingw64/share/icons/hicolor/* "$DIST_DIR/share/icons/hicolor/" 2>/dev/null || true
 fi
 
 if [ -d "/mingw64/lib/gdk-pixbuf-2.0" ]; then
     mkdir -p "$DIST_DIR/lib/gdk-pixbuf-2.0"
-    cp -r /mingw64/lib/gdk-pixbuf-2.0/* "$DIST_DIR/lib/gdk-pixbuf-2.0/"
+    cp -r /mingw64/lib/gdk-pixbuf-2.0/* "$DIST_DIR/lib/gdk-pixbuf-2.0/" 2>/dev/null || true
 fi
 
 if [ -d "/mingw64/lib/gio/modules" ]; then
     mkdir -p "$DIST_DIR/lib/gio/modules"
-    cp -r /mingw64/lib/gio/modules/* "$DIST_DIR/lib/gio/modules/"
+    cp -r /mingw64/lib/gio/modules/* "$DIST_DIR/lib/gio/modules/" 2>/dev/null || true
 fi
