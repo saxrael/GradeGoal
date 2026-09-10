@@ -9,7 +9,7 @@ on:
 
 jobs:
   lint:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Install Clang-Format
@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-22.04, windows-latest, macos-latest ]
+        os: [ ubuntu-24.04, windows-latest, macos-latest ]
         build_type: [ Release ]
     runs-on: ${{ matrix.os }}
     steps:

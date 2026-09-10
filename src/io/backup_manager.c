@@ -28,8 +28,22 @@
 #endif
 
 typedef struct {
-    char filename[256];
+    char filename[512];
 } GGBackupEntry;
+
+static time_t gg_timegm(const struct tm *tm) {
+    int y = tm->tm_year + 1900;
+    int m = tm->tm_mon + 1;
+    if (m <= 2) {
+        y -= 1;
+        m += 12;
+    }
+    long long days = 365LL * (long long)y + (long long)(y / 4) - (long long)(y / 100) + (long long)(y / 400) +
+                     (long long)((153 * (m - 3) + 2) / 5) + (long long)tm->tm_mday - 719469LL;
+    long long secs =
+        days * 86400LL + (long long)tm->tm_hour * 3600LL + (long long)tm->tm_min * 60LL + (long long)tm->tm_sec;
+    return (time_t)secs;
+}
 
 static int compare_backup_names(const void *a, const void *b) {
     const GGBackupEntry *entry_a = (const GGBackupEntry *)a;
@@ -40,15 +54,15 @@ static int compare_backup_names(const void *a, const void *b) {
 static size_t list_backup_files(const char *backup_dir, GGBackupEntry *entries, size_t max_entries) {
     size_t count = 0;
 #if defined(_WIN32)
-    char search_pattern[512];
-    snprintf(search_pattern, sizeof(search_pattern), "%s\\GradeGoal_backup_*.db", backup_dir);
+    char search_pattern[4096];
+    snprintf(search_pattern, sizeof(search_pattern), "%.3000s\\GradeGoal_backup_*.db", backup_dir);
     WIN32_FIND_DATAA find_data;
     HANDLE handle = FindFirstFileA(search_pattern, &find_data);
     if (handle != INVALID_HANDLE_VALUE) {
         do {
             if (!(find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
                 if (count < max_entries) {
-                    snprintf(entries[count].filename, sizeof(entries[count].filename), "%s", find_data.cFileName);
+                    snprintf(entries[count].filename, sizeof(entries[count].filename), "%.511s", find_data.cFileName);
                     count++;
                 }
             }
@@ -64,7 +78,7 @@ static size_t list_backup_files(const char *backup_dir, GGBackupEntry *entries, 
                 size_t len = strlen(entry->d_name);
                 if (len > 3 && strcmp(entry->d_name + len - 3, ".db") == 0) {
                     if (count < max_entries) {
-                        snprintf(entries[count].filename, sizeof(entries[count].filename), "%s", entry->d_name);
+                        snprintf(entries[count].filename, sizeof(entries[count].filename), "%.511s", entry->d_name);
                         count++;
                     }
                 }
@@ -91,13 +105,13 @@ GGStatus gg_backup_create_snapshot(const char *db_filepath, const char *backup_d
     gmtime_r(&now, &tm_info);
 #endif
 
-    char target_path[512];
+    char target_path[4096];
 #if defined(_WIN32)
-    snprintf(target_path, sizeof(target_path), "%s\\GradeGoal_backup_%04d%02d%02d_%02d%02d%02d.db", backup_dir,
+    snprintf(target_path, sizeof(target_path), "%.3000s\\GradeGoal_backup_%04d%02d%02d_%02d%02d%02d.db", backup_dir,
              tm_info.tm_year + 1900, tm_info.tm_mon + 1, tm_info.tm_mday, tm_info.tm_hour, tm_info.tm_min,
              tm_info.tm_sec);
 #else
-    snprintf(target_path, sizeof(target_path), "%s/GradeGoal_backup_%04d%02d%02d_%02d%02d%02d.db", backup_dir,
+    snprintf(target_path, sizeof(target_path), "%.3000s/GradeGoal_backup_%04d%02d%02d_%02d%02d%02d.db", backup_dir,
              tm_info.tm_year + 1900, tm_info.tm_mon + 1, tm_info.tm_mday, tm_info.tm_hour, tm_info.tm_min,
              tm_info.tm_sec);
 #endif
@@ -155,11 +169,11 @@ GGStatus gg_backup_rotate(const char *backup_dir, size_t max_retained) {
 
     size_t files_to_delete = count - max_retained;
     for (size_t i = 0; i < files_to_delete; i++) {
-        char full_path[512];
+        char full_path[4096];
 #if defined(_WIN32)
-        snprintf(full_path, sizeof(full_path), "%s\\%s", backup_dir, entries[i].filename);
+        snprintf(full_path, sizeof(full_path), "%.3000s\\%.512s", backup_dir, entries[i].filename);
 #else
-        snprintf(full_path, sizeof(full_path), "%s/%s", backup_dir, entries[i].filename);
+        snprintf(full_path, sizeof(full_path), "%.3000s/%.512s", backup_dir, entries[i].filename);
 #endif
         remove(full_path);
     }
@@ -204,11 +218,7 @@ GGStatus gg_backup_get_last_timestamp(const char *backup_dir, time_t *out_timest
     tm_info.tm_sec = second;
     tm_info.tm_isdst = 0;
 
-#if defined(_WIN32)
-    *out_timestamp = _mkgmtime(&tm_info);
-#else
-    *out_timestamp = timegm(&tm_info);
-#endif
+    *out_timestamp = gg_timegm(&tm_info);
 
     return GG_OK;
 }
